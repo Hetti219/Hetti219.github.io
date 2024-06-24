@@ -1,0 +1,138 @@
+/* Hacker-like styling */
+body {
+  background-color: #000; /* Black background */
+  color: #0f0; /* Green text */
+  font-family: monospace; /* Monospaced font like Courier or Consolas */
+  margin: 0;
+  padding: 20px;
+  overflow-y: scroll;
+}
+
+header h1 {
+  font-size: 2em; /* Larger heading */
+  margin-bottom: 10px;
+}
+
+nav a {
+  color: #0f0;
+  text-decoration: none; /* No underline */
+  margin: 0 10px;
+}
+
+section {
+  border: 2px solid #0f0; /* Border for sections */
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 1.5em;
+}
+
+.project img {
+  max-width: 100%; /* Image responsiveness */
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.project a {
+  color: #0f0;
+}
+
+footer {
+  text-align: center;
+}
+
+/* "Glitchy" effect for text (optional) */
+h1,
+h2,
+p {
+  animation: glitch 1s linear infinite;
+}
+
+@keyframes glitch {
+  2%,
+  64% {
+    transform: translate(2px, 0) skew(0deg);
+  }
+  4%,
+  60% {
+    transform: translate(-2px, 0) skew(0deg);
+  }
+  62% {
+    transform: translate(0, 0) skew(5deg);
+  }
+}
+
+/* Hide default scrollbar but keep functionality */
+body::-webkit-scrollbar {
+  width: 4px; /* Thin scrollbar */
+  background-color: transparent; /* Transparent background */
+}
+
+/* Style the thumb (the draggable part of the scrollbar) */
+body::-webkit-scrollbar-thumb {
+  background-color: #0f0; /* Green thumb */
+  border-radius: 2px; /* Rounded edges */
+}
+
+/* Optional: Style the track (the background of the scrollbar) */
+body::-webkit-scrollbar-track {
+  background-color: #000; /* Black track */
+}
+
+/* ... other styles */
+.tech-list {
+  list-style: none; /* Remove default list markers */
+  padding: 0;
+  margin: 10px 0;
+}
+
+.tech-list li {
+  display: inline-block; /* Display list items horizontally */
+  margin-right: 10px; /* Add spacing between items */
+}
+
+/* Contact List Styles */
+.contact-list {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-list li {
+  margin-bottom: 5px;
+}
+
+/* Style the links in the contact list */
+.contact-list a {
+  /* Select all anchor tags within .contact-list */
+  color: #0f0; /* Green link color */
+  text-decoration: none;
+}
+
+.contact-list a:visited {
+  /* Style visited links */
+  color: #0f0; /* Keep the same color for visited links */
+}
+
+.contact-list li::before {
+  content: "> "; /* Add the arrow symbol */
+  color: #0f0; /* Green color */
+  margin-right: 5px; /* Add spacing after the arrow */
+}
+
+/* Projects Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(250px, 1fr)
+  ); /* Responsive columns */
+  gap: 20px; /* Spacing between project cards */
+}
+
+.project {
+  background-color: #111; /* Darker background for the project cards */
+  border: 2px solid #0f0; /* Green border */
+  padding: 20px;
+}
