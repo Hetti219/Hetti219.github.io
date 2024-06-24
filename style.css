@@ -136,3 +136,21 @@ body::-webkit-scrollbar-track {
   border: 2px solid #0f0; /* Green border */
   padding: 20px;
 }
+
+/* Media Query for Smaller Screens */
+@media (max-width: 768px) { 
+  .projects-grid {
+      grid-template-columns: 1fr; /* One column on smaller screens */
+  }
+
+  .contact-list {
+      flex-direction: column; /* Stack links vertically */
+      align-items: center;  /* Center the links */
+  }
+
+  .contact-list li {
+      margin: 5px 0; /* Adjust margin for vertical spacing */
+  }
+
+  /* ... other styles you want to change for smaller screens ... */
+}
