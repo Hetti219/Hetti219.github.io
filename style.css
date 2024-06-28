@@ -46,7 +46,7 @@ footer {
 /* "Glitchy" effect for text (optional) */
 h1,
 h2,
-p {
+h3 {
   animation: glitch 1s linear infinite;
 }
 
