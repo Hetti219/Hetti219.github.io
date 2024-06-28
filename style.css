@@ -11,6 +11,7 @@ body {
 header h1 {
   font-size: 2em; /* Larger heading */
   margin-bottom: 10px;
+  min-height: 60px;
 }
 
 nav a {
@@ -44,6 +45,7 @@ footer {
 }
 
 /* "Glitchy" effect for text (optional) */
+/*
 h1,
 h2,
 h3 {
@@ -63,6 +65,7 @@ h3 {
     transform: translate(0, 0) skew(2.5deg);
   }
 }
+*/
 
 /* Hide default scrollbar but keep functionality */
 body::-webkit-scrollbar {
