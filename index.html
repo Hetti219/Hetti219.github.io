@@ -1,216 +1,365 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta
-      name="description"
-      content="Hacker portfolio showcasing web development, cybersecurity, game development and ethical hacking projects."
-    />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sathika Hettiarachchi - Portfolio</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <h1></h1>
-      <nav>
-        <a href="#about">About</a>
-        <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
-      </nav>
-    </header>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Terminal Interface - Sathika Hettiarachchi - Network Security & Full-Stack Development">
+    <title>root@sathika:~/portfolio $</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- TERMINAL PROMPT HEADER -->
+    <div class="terminal-header">
+        <div class="prompt-line">
+            <span class="prompt-user">root@sathika</span><span class="prompt-path">:~/portfolio</span><span class="prompt-symbol">$</span> <span class="cursor"></span>
+        </div>
+    </div>
 
-    <!--About Section-->
-    <section id="about">
-      <h2>About Me</h2>
-      <p>
-        I'm Sathika Hettiarachchi, a Computer Networks undergraduate with a
-        strong foundation in software engineering. My academic journey and
-        personal interests have driven me to explore various areas of
-        development, ranging from mobile apps to game design, while steadily
-        building my skills in both front-end and back-end technologies. I'm
-        proficient in a wide range of programming languages and tools, including
-        Python, Java, HTML, CSS, JavaScript, PHP, C#, Dart, and Flutter. I also
-        work with frameworks and platforms like React JS, Unity, Firebase, AWS,
-        and Android Studio, and I have experience with databases like MySQL. My
-        future goals are to become a professional penetration tester or to
-        launch my own game development company. I’m committed to continuous
-        learning and always looking for opportunities to grow and apply my
-        knowledge to real-world challenges.
-      </p>
+    <!-- NAME BANNER -->
+    <div class="name-banner">
+        <pre class="banner-text">
+╔═══════════════════════════════════════════════════════════════════╗
+║                                                                   ║
+║              SATHIKA HETTIARACHCHI                                ║
+║              NETWORK SECURITY & FULL-STACK DEVELOPER              ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
+        </pre>
+    </div>
+
+    <!-- SYSTEM STATUS BLOCK -->
+    <div class="status-block" id="status">
+        <h2>[ SYSTEM STATUS ]</h2>
+        <div class="status-line">
+            <span class="status-label">STATUS:</span>
+            <span class="status-value status-active">READY TO DEPLOY</span>
+        </div>
+        <div class="status-line">
+            <span class="status-label">UPTIME:</span>
+            <span class="status-value">4 YEARS (EDUCATION)</span>
+        </div>
+        <div class="status-line">
+            <span class="status-label">PACKET LOSS:</span>
+            <span class="status-value status-active">0%</span>
+        </div>
+        <div class="status-line">
+            <span class="status-label">ROLE:</span>
+            <span class="status-value">FINAL YEAR STUDENT | COMPUTER NETWORKS</span>
+        </div>
+        <div class="status-line">
+            <span class="status-label">CLEARANCE:</span>
+            <span class="status-value">DEVELOPER | SECURITY RESEARCHER</span>
+        </div>
+        <div class="status-line">
+            <span class="status-label">LOCATION:</span>
+            <span class="status-value">NODE_FINAL_YEAR</span>
+        </div>
+    </div>
+
+    <!-- COMMAND MENU / NAVIGATION -->
+    <div class="command-menu">
+        <h3>[ AVAILABLE COMMANDS ]</h3>
+        <ul class="command-list">
+            <li onclick="scrollToSection('status')">./status --show</li>
+            <li onclick="scrollToSection('config')">./config --list</li>
+            <li onclick="scrollToSection('logs')">./logs --display</li>
+            <li onclick="scrollToSection('contact')">./connect --init</li>
+        </ul>
+    </div>
+
+    <!-- CONFIGURATION / SKILLS -->
+    <section id="config">
+        <h2 class="section-header">[ CONFIGURATION ]</h2>
+
+        <div class="protocol-stack">
+            <div class="stack-layer">
+                <span class="layer-name">WEB DEVELOPMENT</span>
+                <div class="tech-tags">
+                    <span class="tech-tag">HTML</span>
+                    <span class="tech-tag">CSS</span>
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">PHP</span>
+                    <span class="tech-tag">React</span>
+                </div>
+            </div>
+
+            <div class="stack-layer">
+                <span class="layer-name">MOBILE ENGINEERING</span>
+                <div class="tech-tags">
+                    <span class="tech-tag">Flutter</span>
+                    <span class="tech-tag">Dart</span>
+                    <span class="tech-tag">Android Studio</span>
+                </div>
+            </div>
+
+            <div class="stack-layer">
+                <span class="layer-name">GAME DEVELOPMENT</span>
+                <div class="tech-tags">
+                    <span class="tech-tag">Unity</span>
+                    <span class="tech-tag">C#</span>
+                </div>
+            </div>
+
+            <div class="stack-layer">
+                <span class="layer-name">BACKEND SYSTEMS</span>
+                <div class="tech-tags">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Java</span>
+                    <span class="tech-tag">MySQL</span>
+                    <span class="tech-tag">Firebase</span>
+                    <span class="tech-tag">AWS</span>
+                </div>
+            </div>
+
+            <div class="stack-layer">
+                <span class="layer-name">SECURITY OPERATIONS</span>
+                <div class="tech-tags">
+                    <span class="tech-tag">Network Analysis</span>
+                    <span class="tech-tag">Penetration Testing</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-block" style="margin-top: 2rem;">
+            <h2>[ MISSION DIRECTIVES ]</h2>
+            <div class="status-line">
+                <span class="status-label">1.</span>
+                <span class="status-value">Achieve professional penetration tester certification</span>
+            </div>
+            <div class="status-line">
+                <span class="status-label">2.</span>
+                <span class="status-value">Establish independent game development company</span>
+            </div>
+            <div class="status-line">
+                <span class="status-label">3.</span>
+                <span class="status-value">Continuous system optimization and skill acquisition</span>
+            </div>
+        </div>
     </section>
 
-    <!--Projects Section-->
-    <section id="projects">
-      <h2>Projects</h2>
+    <!-- PROJECT LOGS (TRACEROUTE STYLE) -->
+    <section id="logs">
+        <h2 class="section-header">[ DEPLOYMENT LOGS ]</h2>
 
-      <div class="projects-grid">
-        <!--Project 1-->
-        <div class="project">
-          <h3>MaskBook</h3>
-          <img src="images/maskbook.jpg" alt="Project 1 Image" />
-          <p>A simple social media site built with HTML, CSS, JS, PHP</p>
-          <h4>Technologies Used:</h4>
-          <ul class="tech-list">
-            <li>HTML</li>
-            <li>CSS</li>
-            <li>JavaScript</li>
-            <li>Bootstrap 5</li>
-            <li>PHP</li>
-            <li>MySQL</li>
-          </ul>
-          <a href="https://mask-book.atwebpages.com/" target="_blank"
-            >View Project</a
-          >
+        <!-- PROJECT 1: MaskBook -->
+        <div class="project-traceroute">
+            <div class="project-title">[PKT-001] MaskBook</div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 1:</span>
+                <span class="hop-label">PROBLEM:</span>
+                <span class="hop-value">Need for secure social media platform with authentication</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 2:</span>
+                <span class="hop-label">PROTOCOLS:</span>
+                <span class="hop-value">HTML | CSS | JavaScript | PHP | MySQL</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 3:</span>
+                <span class="hop-label">SOLUTION:</span>
+                <span class="hop-value">Full-stack social platform with real-time interaction</span>
+            </div>
+            <div class="destination">DESTINATION: SUCCESS</div>
+            <a href="https://mask-book.atwebpages.com/" target="_blank" class="project-link">[DEPLOY]</a>
         </div>
 
-        <!--Project 2-->
-        <div class="project">
-          <h3>Cube Run</h3>
-          <img src="images/My 1st Project.png" alt="Project 2 Image" />
-          <p>Control the cube without hitting other cubes</p>
-          <h4>Technologies Used:</h4>
-          <ul class="tech-list">
-            <li>Unity</li>
-            <li>C#</li>
-          </ul>
-          <a href="https://tendoronin.itch.io/cube-run" target="_blank"
-            >View Project</a
-          >
+        <!-- PROJECT 2: Cube Run -->
+        <div class="project-traceroute">
+            <div class="project-title">[PKT-002] Cube Run</div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 1:</span>
+                <span class="hop-label">PROBLEM:</span>
+                <span class="hop-value">Collision detection and physics simulation challenge</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 2:</span>
+                <span class="hop-label">PROTOCOLS:</span>
+                <span class="hop-value">Unity | C#</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 3:</span>
+                <span class="hop-label">SOLUTION:</span>
+                <span class="hop-value">Real-time physics engine with collision system</span>
+            </div>
+            <div class="destination">DESTINATION: SUCCESS</div>
+            <a href="https://tendoronin.itch.io/cube-run" target="_blank" class="project-link">[DEPLOY]</a>
         </div>
 
-        <!--Project 3-->
-        <div class="project">
-          <h3>Smack-a-Food!</h3>
-          <img src="images/LSq0lO.png" alt="Project 3 Image" />
-          <p>Smack Food to Bits and earn scores!</p>
-          <h4>Technologies Used:</h4>
-          <ul class="tech-list">
-            <li>Unity</li>
-            <li>C#</li>
-          </ul>
-          <a href="https://tendoronin.itch.io/smack-a-food" target="_blank"
-            >View Project</a
-          >
+        <!-- PROJECT 3: Smack-a-Food! -->
+        <div class="project-traceroute">
+            <div class="project-title">[PKT-003] Smack-a-Food!</div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 1:</span>
+                <span class="hop-label">PROBLEM:</span>
+                <span class="hop-value">Event-driven arcade game with score tracking</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 2:</span>
+                <span class="hop-label">PROTOCOLS:</span>
+                <span class="hop-value">Unity | C#</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 3:</span>
+                <span class="hop-label">SOLUTION:</span>
+                <span class="hop-value">UI-integrated arcade system with event handlers</span>
+            </div>
+            <div class="destination">DESTINATION: SUCCESS</div>
+            <a href="https://tendoronin.itch.io/smack-a-food" target="_blank" class="project-link">[DEPLOY]</a>
         </div>
 
-        <!--Project 4-->
-        <div class="project">
-          <h3>Laser Hive</h3>
-          <img src="images/wFhawD.png" alt="Project 4 Image" />
-          <p>Destroy Bots with a laser gun</p>
-          <h4>Technologies Used:</h4>
-          <ul class="tech-list">
-            <li>Unity</li>
-            <li>C#</li>
-          </ul>
-          <a href="https://tendoronin.itch.io/laser-hive" target="_blank"
-            >View Project</a
-          >
+        <!-- PROJECT 4: Laser Hive -->
+        <div class="project-traceroute">
+            <div class="project-title">[PKT-004] Laser Hive</div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 1:</span>
+                <span class="hop-label">PROBLEM:</span>
+                <span class="hop-value">AI pathfinding with combat mechanics</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 2:</span>
+                <span class="hop-label">PROTOCOLS:</span>
+                <span class="hop-value">Unity | C#</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 3:</span>
+                <span class="hop-label">SOLUTION:</span>
+                <span class="hop-value">AI-driven combat system with particle effects</span>
+            </div>
+            <div class="destination">DESTINATION: SUCCESS</div>
+            <a href="https://tendoronin.itch.io/laser-hive" target="_blank" class="project-link">[DEPLOY]</a>
         </div>
 
-        <!--Project 5-->
-        <div class="project">
-          <h3>Space Assault</h3>
-          <img
-            src="images/Screenshot 2023-04-14 064807.png"
-            alt="Project 5 Image"
-          />
-          <p>Destroy all Spaceships!... or save your life.</p>
-          <h4>Technologies Used:</h4>
-          <ul class="tech-list">
-            <li>Python</li>
-            <li>Pygame</li>
-          </ul>
-          <a href="https://tendoronin.itch.io/space-assault" target="_blank"
-            >View Project</a
-          >
+        <!-- PROJECT 5: Space Assault -->
+        <div class="project-traceroute">
+            <div class="project-title">[PKT-005] Space Assault</div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 1:</span>
+                <span class="hop-label">PROBLEM:</span>
+                <span class="hop-value">Space combat simulator with sprite rendering</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 2:</span>
+                <span class="hop-label">PROTOCOLS:</span>
+                <span class="hop-value">Python | Pygame</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 3:</span>
+                <span class="hop-label">SOLUTION:</span>
+                <span class="hop-value">Event-driven shooter with sprite management</span>
+            </div>
+            <div class="destination">DESTINATION: SUCCESS</div>
+            <a href="https://tendoronin.itch.io/space-assault" target="_blank" class="project-link">[DEPLOY]</a>
         </div>
 
-        <!--Project 6-->
-        <div class="project">
-          <h3>CountO</h3>
-          <img src="images/counto.jpg" alt="Project 6 Image" />
-          <p>Make your own countdowns</p>
-          <h4>Technologies Used:</h4>
-          <ul class="tech-list">
-            <li>HTML</li>
-            <li>CSS</li>
-            <li>JavaScript</li>
-          </ul>
-          <a href="https://counto.w3spaces.com/" target="_blank"
-            >View Project</a
-          >
+        <!-- PROJECT 6: CountO -->
+        <div class="project-traceroute">
+            <div class="project-title">[PKT-006] CountO</div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 1:</span>
+                <span class="hop-label">PROBLEM:</span>
+                <span class="hop-value">Countdown timer with data persistence</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 2:</span>
+                <span class="hop-label">PROTOCOLS:</span>
+                <span class="hop-value">HTML | CSS | JavaScript</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 3:</span>
+                <span class="hop-label">SOLUTION:</span>
+                <span class="hop-value">Client-side timer with local storage</span>
+            </div>
+            <div class="destination">DESTINATION: SUCCESS</div>
+            <a href="https://counto.w3spaces.com/" target="_blank" class="project-link">[DEPLOY]</a>
         </div>
 
-        <!--Project 7-->
-        <div class="project">
-          <h3>EXIF Toolkit</h3>
-          <img src="images/exif_toolkit.jpg" alt="Project 6 Image" />
-          <p>An Android app to manipulate EXIF data</p>
-          <h4>Technologies Used:</h4>
-          <ul class="tech-list">
-            <li>Flutter</li>
-            <li>Firebase</li>
-          </ul>
-          <a href="https://github.com/Hetti219/EXIF_toolkit" target="_blank"
-            >View Project</a
-          >
+        <!-- PROJECT 7: EXIF Toolkit -->
+        <div class="project-traceroute">
+            <div class="project-title">[PKT-007] EXIF Toolkit</div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 1:</span>
+                <span class="hop-label">PROBLEM:</span>
+                <span class="hop-value">Metadata manipulation for digital forensics</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 2:</span>
+                <span class="hop-label">PROTOCOLS:</span>
+                <span class="hop-value">Flutter | Firebase</span>
+            </div>
+            <div class="trace-hop">
+                <span class="hop-number">Hop 3:</span>
+                <span class="hop-label">SOLUTION:</span>
+                <span class="hop-value">Cloud-integrated metadata tool</span>
+            </div>
+            <div class="destination">DESTINATION: SUCCESS</div>
+            <a href="https://github.com/Hetti219/EXIF_toolkit" target="_blank" class="project-link">[SOURCE]</a>
         </div>
-      </div>
     </section>
 
+    <!-- CONTACT / COMMAND INPUT -->
     <section id="contact">
-      <h2>Contact Me</h2>
-      <div class="contact-list">
-        <li>
-          <a href="mailto:sathikahettiarachchi219@gmail.com" target="_blank"
-            >Email</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://www.linkedin.com/in/sathika-hettiarachchi-516112303"
-            target="_blank"
-            >LinkedIn</a
-          >
-        </li>
-        <li>
-          <a href="https://github.com/Hetti219" target="_blank">GitHub</a>
-        </li>
-        <li>
-          <a
-            href="https://www.instagram.com/ssh_219?igsh=MWhkczh1N3htNHQ0ag=="
-            target="_blank"
-            >Instagram</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://www.facebook.com/profile.php?id=61556023235648"
-            target="_blank"
-            >Facebook</a
-          >
-        </li>
-        <li>
-          <a
-            href="https://x.com/SathikaH219?t=OpVTI-J7xY2ZS4iAPP74AQ&s=09"
-            target="_blank"
-            >X (formerly Twitter)</a
-          >
-        </li>
-        <li>
-          <a href="https://discord.com/invite/nrhgUBNd" target="_blank"
-            >Discord</a
-          >
-        </li>
-      </div>
+        <h2 class="section-header">[ ESTABLISH CONNECTION ]</h2>
+
+        <div class="command-input-container">
+            <span class="command-input-label">COMMAND INPUT:</span>
+            <div class="command-input-wrapper">
+                <span class="command-prompt">></span>
+                <input type="text" class="command-input" id="commandInput" placeholder="Type command or select below..." />
+            </div>
+
+            <div class="command-suggestions">
+                <p>Available commands:</p>
+                <div class="command-option" onclick="executeCommand('mailto')">mailto: sathikahettiarachchi219@gmail.com</div>
+                <div class="command-option" onclick="executeCommand('linkedin')">connect: linkedin</div>
+                <div class="command-option" onclick="executeCommand('github')">connect: github</div>
+                <div class="command-option" onclick="executeCommand('instagram')">connect: instagram</div>
+                <div class="command-option" onclick="executeCommand('facebook')">connect: facebook</div>
+                <div class="command-option" onclick="executeCommand('twitter')">connect: twitter</div>
+                <div class="command-option" onclick="executeCommand('discord')">connect: discord</div>
+            </div>
+        </div>
+
+        <table class="contact-table">
+            <tr>
+                <td>SMTP</td>
+                <td><a href="mailto:sathikahettiarachchi219@gmail.com">sathikahettiarachchi219@gmail.com</a></td>
+            </tr>
+            <tr>
+                <td>HTTPS</td>
+                <td><a href="https://www.linkedin.com/in/sathika-hettiarachchi-516112303" target="_blank">linkedin.com/in/sathika-hettiarachchi</a></td>
+            </tr>
+            <tr>
+                <td>GIT</td>
+                <td><a href="https://github.com/Hetti219" target="_blank">github.com/Hetti219</a></td>
+            </tr>
+            <tr>
+                <td>HTTPS</td>
+                <td><a href="https://www.instagram.com/ssh_219?igsh=MWhkczh1N3htNHQ0ag==" target="_blank">instagram.com/ssh_219</a></td>
+            </tr>
+            <tr>
+                <td>HTTPS</td>
+                <td><a href="https://www.facebook.com/profile.php?id=61556023235648" target="_blank">facebook.com/sathika.hettiarachchi</a></td>
+            </tr>
+            <tr>
+                <td>HTTPS</td>
+                <td><a href="https://x.com/SathikaH219?t=OpVTI-J7xY2ZS4iAPP74AQ&s=09" target="_blank">x.com/SathikaH219</a></td>
+            </tr>
+            <tr>
+                <td>VOIP</td>
+                <td><a href="https://discord.com/invite/nrhgUBNd" target="_blank">discord.com/invite/nrhgUBNd</a></td>
+            </tr>
+        </table>
     </section>
 
+    <!-- FOOTER / DIAGNOSTICS -->
     <footer>
-      <p>&copy; 2025 Sathika Hettiarachchi</p>
+        <div class="diagnostics">
+            <span id="render-time">Loading...</span> |
+            <span id="payload-size">Calculating...</span> |
+            <span>&copy; 2025 SATHIKA HETTIARACHCHI</span>
+        </div>
     </footer>
 
     <script src="script.js"></script>
-  </body>
+</body>
 </html>

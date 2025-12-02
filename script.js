@@ -1,238 +1,251 @@
-// Nvidia-themed Portfolio JavaScript
+// CLI TERMINAL INTERFACE - PURE JAVASCRIPT
+// No frameworks. Maximum performance. Zero bloat.
 
-// Wait for DOM to be fully loaded
-document.addEventListener("DOMContentLoaded", function () {
-  // Create and append loader to body
-  const loader = document.createElement("div");
-  loader.className = "loader";
-  loader.innerHTML = `
-      <div class="loader-content">
-        <div class="loader-bar">
-          <div class="loader-progress"></div>
-        </div>
-        <div class="loader-text">LOADING</div>
-      </div>
-    `;
-  document.body.appendChild(loader);
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize performance metrics
+  calculatePerformanceMetrics();
 
-  // Add Nvidia glow effect to all projects
-  const projects = document.querySelectorAll(".project");
-  projects.forEach((project) => {
-    project.classList.add("nvidia-glow");
-  });
+  // Initialize command input
+  initCommandInput();
 
-  // Add particle effect to background (Nvidia-style)
-  createParticleCanvas();
-
-  // Remove loader after page loads
-  window.addEventListener("load", function () {
-    setTimeout(() => {
-      loader.style.opacity = "0";
-      loader.style.transition = "opacity 0.5s ease";
-      setTimeout(() => {
-        loader.remove();
-      }, 500);
-    }, 1500); // Show loader for at least 1.5 seconds
-  });
-
-  // Smooth scrolling for navigation links
-  document.querySelectorAll("nav a").forEach((anchor) => {
-    anchor.addEventListener("click", function (e) {
-      e.preventDefault();
-      const targetId = this.getAttribute("href");
-      const targetElement = document.querySelector(targetId);
-
-      window.scrollTo({
-        top: targetElement.offsetTop - 80,
-        behavior: "smooth",
-      });
-    });
-  });
-
-  // Header scroll effect
-  const header = document.querySelector("header");
-  window.addEventListener("scroll", function () {
-    if (window.scrollY > 100) {
-      header.classList.add("scrolled");
-    } else {
-      header.classList.remove("scrolled");
-    }
-  });
-
-  // Project hover effect
-  projects.forEach((project) => {
-    project.addEventListener("mouseenter", function () {
-      this.style.transform = "translateY(-10px)";
-      this.style.boxShadow = "0 15px 30px rgba(118, 185, 0, 0.2)";
-    });
-
-    project.addEventListener("mouseleave", function () {
-      this.style.transform = "translateY(0)";
-      this.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.3)";
-    });
-  });
-
-  // Animate elements on scroll
-  const animateElements = document.querySelectorAll(
-    "section h2, .project, #about p"
-  );
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = "1";
-          entry.target.style.transform = "translateY(0)";
-        }
-      });
-    },
-    { threshold: 0.1 }
-  );
-
-  animateElements.forEach((element) => {
-    element.style.opacity = "0";
-    element.style.transform = "translateY(20px)";
-    element.style.transition = "opacity 0.6s ease, transform 0.6s ease";
-    observer.observe(element);
-  });
+  // Initialize smooth scrolling
+  initSmoothScroll();
 });
 
-// Create Nvidia-themed particle canvas
-function createParticleCanvas() {
-  const canvas = document.createElement("canvas");
-  canvas.id = "particle-canvas";
-  canvas.style.position = "fixed";
-  canvas.style.top = "0";
-  canvas.style.left = "0";
-  canvas.style.width = "100%";
-  canvas.style.height = "100%";
-  canvas.style.pointerEvents = "none";
-  canvas.style.zIndex = "-1";
-  document.body.prepend(canvas);
+// ═══════════════════════════════════════════════════════════════════
+// PERFORMANCE METRICS CALCULATION
+// ═══════════════════════════════════════════════════════════════════
 
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+function calculatePerformanceMetrics() {
+  window.addEventListener('load', function() {
+    // Calculate render time
+    let renderTime = 0;
+    const navigationEntry = window.performance.getEntriesByType('navigation')[0];
 
-  // Particle properties
-  const particles = [];
-  const particleCount = 40;
-  const nvidiaGreen = "#76b900";
-  const particleMaxSize = 4;
-
-  // Create particles
-  for (let i = 0; i < particleCount; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: Math.random() * particleMaxSize + 1,
-      speedX: (Math.random() - 0.5) * 0.3,
-      speedY: (Math.random() - 0.5) * 0.3,
-      opacity: Math.random() * 0.5 + 0.2,
-    });
-  }
-
-  // Animation function
-  function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    for (let i = 0; i < particles.length; i++) {
-      const p = particles[i];
-
-      // Draw particle
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(118, 185, 0, ${p.opacity})`;
-      ctx.fill();
-
-      // Connect particles within a certain distance
-      for (let j = i; j < particles.length; j++) {
-        const p2 = particles[j];
-        const dx = p.x - p2.x;
-        const dy = p.y - p2.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < 100) {
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(118, 185, 0, ${0.1 * (1 - distance / 100)})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
-
-      // Update particle position
-      p.x += p.speedX;
-      p.y += p.speedY;
-
-      // Wrap particles around edges
-      if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-      if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+    if (navigationEntry) {
+      renderTime = (navigationEntry.loadEventEnd / 1000).toFixed(2);
     }
 
-    requestAnimationFrame(animateParticles);
-  }
+    // Calculate payload size
+    let totalSize = 0;
 
-  // Handle window resize
-  window.addEventListener("resize", function () {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    if (window.performance && window.performance.getEntriesByType) {
+      const resources = window.performance.getEntriesByType('resource');
+
+      resources.forEach(function(resource) {
+        if (resource.transferSize) {
+          totalSize += resource.transferSize;
+        }
+      });
+
+      if (navigationEntry && navigationEntry.transferSize) {
+        totalSize += navigationEntry.transferSize;
+      }
+    }
+
+    const payloadSizeKB = (totalSize / 1024).toFixed(2);
+
+    // Update DOM
+    const renderTimeElement = document.getElementById('render-time');
+    const payloadSizeElement = document.getElementById('payload-size');
+
+    if (renderTimeElement) {
+      renderTimeElement.textContent = 'Render: ' + renderTime + 's';
+    }
+
+    if (payloadSizeElement) {
+      payloadSizeElement.textContent = 'Payload: ' + payloadSizeKB + 'KB';
+    }
+
+    // Console log
+    console.log('═══════════════════════════════════════════════════════');
+    console.log('CLI TERMINAL - PERFORMANCE DIAGNOSTICS');
+    console.log('═══════════════════════════════════════════════════════');
+    console.log('Render Time: ' + renderTime + 's');
+    console.log('Payload Size: ' + payloadSizeKB + 'KB');
+    console.log('Status: READY TO DEPLOY');
+    console.log('Packet Loss: 0%');
+    console.log('═══════════════════════════════════════════════════════');
   });
-
-  // Start animation
-  animateParticles();
 }
 
-// Add typewriter effect for the header (Nvidia style)
-document.addEventListener("DOMContentLoaded", function () {
-  // Get or create an element for the header intro text
-  let introText = document.querySelector(".header-intro");
-  if (!introText) {
-    introText = document.createElement("div");
-    introText.className = "header-intro";
-    introText.style.color = "#76b900";
-    introText.style.fontSize = "1.2rem";
-    introText.style.fontWeight = "500";
-    introText.style.marginTop = "0.5rem";
-    introText.style.fontFamily = "monospace";
-    introText.style.letterSpacing = "1px";
+// ═══════════════════════════════════════════════════════════════════
+// COMMAND INPUT FUNCTIONALITY
+// ═══════════════════════════════════════════════════════════════════
 
-    // Insert before the nav element in header
-    const header = document.querySelector("header");
-    const nav = document.querySelector("nav");
-    header.insertBefore(introText, nav);
+function initCommandInput() {
+  const commandInput = document.getElementById('commandInput');
+
+  if (commandInput) {
+    // Handle enter key
+    commandInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        const command = this.value.trim().toLowerCase();
+        processCommand(command);
+        this.value = '';
+      }
+    });
+
+    // Handle command suggestions from dropdown
+    const commandOptions = document.querySelectorAll('.command-option');
+    commandOptions.forEach(function(option) {
+      option.addEventListener('click', function() {
+        const command = this.textContent.trim();
+        commandInput.value = command;
+      });
+    });
   }
+}
 
-  // Text to display with typewriter effect
-  const text = "DEVELOPER · GAME CREATOR · SECURITY ENTHUSIAST";
-  let charIndex = 0;
+// Process typed commands
+function processCommand(command) {
+  // Parse command
+  if (command.includes('mailto')) {
+    executeCommand('mailto');
+  } else if (command.includes('linkedin')) {
+    executeCommand('linkedin');
+  } else if (command.includes('github')) {
+    executeCommand('github');
+  } else if (command.includes('instagram')) {
+    executeCommand('instagram');
+  } else if (command.includes('facebook')) {
+    executeCommand('facebook');
+  } else if (command.includes('twitter') || command.includes('x.com')) {
+    executeCommand('twitter');
+  } else if (command.includes('discord')) {
+    executeCommand('discord');
+  } else if (command.includes('status')) {
+    scrollToSection('status');
+  } else if (command.includes('config')) {
+    scrollToSection('config');
+  } else if (command.includes('logs')) {
+    scrollToSection('logs');
+  } else if (command.includes('contact') || command.includes('connect')) {
+    scrollToSection('contact');
+  } else if (command.includes('help')) {
+    showHelp();
+  } else if (command === '') {
+    // Empty command, do nothing
+  } else {
+    console.log('Command not recognized: ' + command);
+    console.log('Type "help" for available commands');
+  }
+}
 
-  function typeWriter() {
-    if (charIndex < text.length) {
-      introText.textContent += text.charAt(charIndex);
-      charIndex++;
-      setTimeout(typeWriter, 50);
-    } else {
-      // Add blinking cursor effect after typing is complete
-      introText.innerHTML =
-        introText.textContent + '<span class="cursor">|</span>';
+// Show help in console
+function showHelp() {
+  console.log('═══════════════════════════════════════════════════════');
+  console.log('AVAILABLE COMMANDS:');
+  console.log('═══════════════════════════════════════════════════════');
+  console.log('./status --show        Navigate to system status');
+  console.log('./config --list        Navigate to configuration');
+  console.log('./logs --display       Navigate to deployment logs');
+  console.log('./connect --init       Navigate to contact section');
+  console.log('mailto:                Open email client');
+  console.log('connect: linkedin      Open LinkedIn profile');
+  console.log('connect: github        Open GitHub profile');
+  console.log('connect: instagram     Open Instagram profile');
+  console.log('connect: facebook      Open Facebook profile');
+  console.log('connect: twitter       Open Twitter profile');
+  console.log('connect: discord       Open Discord server');
+  console.log('═══════════════════════════════════════════════════════');
+}
 
-      // Create blinking cursor style
-      const style = document.createElement("style");
-      style.innerHTML = `
-          @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-          }
-          .cursor {
-            animation: blink 1s infinite;
-            color: #76b900;
-          }
-        `;
-      document.head.appendChild(style);
+// ═══════════════════════════════════════════════════════════════════
+// EXECUTE COMMAND (FOR CONTACT LINKS)
+// ═══════════════════════════════════════════════════════════════════
+
+function executeCommand(type) {
+  const links = {
+    'mailto': 'mailto:sathikahettiarachchi219@gmail.com',
+    'linkedin': 'https://www.linkedin.com/in/sathika-hettiarachchi-516112303',
+    'github': 'https://github.com/Hetti219',
+    'instagram': 'https://www.instagram.com/ssh_219?igsh=MWhkczh1N3htNHQ0ag==',
+    'facebook': 'https://www.facebook.com/profile.php?id=61556023235648',
+    'twitter': 'https://x.com/SathikaH219?t=OpVTI-J7xY2ZS4iAPP74AQ&s=09',
+    'discord': 'https://discord.com/invite/nrhgUBNd'
+  };
+
+  if (links[type]) {
+    console.log('Executing command: ' + type);
+    console.log('Opening: ' + links[type]);
+    window.open(links[type], '_blank');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SMOOTH SCROLL NAVIGATION
+// ═══════════════════════════════════════════════════════════════════
+
+function scrollToSection(sectionId) {
+  const section = document.getElementById(sectionId);
+
+  if (section) {
+    section.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+
+    console.log('Navigating to: ' + sectionId);
+  }
+}
+
+function initSmoothScroll() {
+  // Handle navigation links
+  const commandList = document.querySelectorAll('.command-list li');
+
+  commandList.forEach(function(item) {
+    item.addEventListener('click', function() {
+      const command = this.textContent.trim();
+      console.log('Command executed: ' + command);
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TERMINAL TYPING EFFECT (OPTIONAL ENHANCEMENT)
+// ═══════════════════════════════════════════════════════════════════
+
+// Log system boot message
+console.log('═══════════════════════════════════════════════════════');
+console.log('SYSTEM BOOT COMPLETE');
+console.log('═══════════════════════════════════════════════════════');
+console.log('User: root@sathika');
+console.log('Path: ~/portfolio');
+console.log('Status: ONLINE');
+console.log('Type "help" for available commands');
+console.log('═══════════════════════════════════════════════════════');
+
+// ═══════════════════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════════════════
+
+document.addEventListener('keydown', function(e) {
+  // Focus command input on "/" key
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    const commandInput = document.getElementById('commandInput');
+    if (commandInput) {
+      commandInput.focus();
     }
   }
 
-  // Start the typewriter effect after a short delay
-  setTimeout(typeWriter, 2500);
+  // Show help on "?" key
+  if (e.key === '?' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    showHelp();
+  }
 });
+
+// ═══════════════════════════════════════════════════════════════════
+// ADDITIONAL DIAGNOSTICS
+// ═══════════════════════════════════════════════════════════════════
+
+console.log('═══════════════════════════════════════════════════════');
+console.log('SYSTEM INFORMATION');
+console.log('═══════════════════════════════════════════════════════');
+console.log('User Agent: ' + navigator.userAgent);
+console.log('Language: ' + navigator.language);
+console.log('Screen Resolution: ' + screen.width + 'x' + screen.height);
+console.log('Viewport: ' + window.innerWidth + 'x' + window.innerHeight);
+console.log('═══════════════════════════════════════════════════════');
