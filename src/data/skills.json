@@ -1,0 +1,48 @@
+{
+  "Systems & Networking": [
+    "Distributed Systems (PBFT, Gossip Protocols, Vector Clocks)",
+    "Network Security (Packet Inspection, DDoS Mitigation, netfilter/NFQUEUE)",
+    "P2P Networking (libp2p, Kademlia DHT, NAT Traversal)",
+    "Linux Internals (/proc, ipset, BPF, systemd)",
+    "Protocol Design (Protobuf, WebSocket, REST API)"
+  ],
+  "Languages (Proven)": [
+    "Go",
+    "C",
+    "Dart",
+    "Python",
+    "JavaScript/TypeScript"
+  ],
+  "Languages (Familiar)": [
+    "Java",
+    "C#",
+    "PHP",
+    "Kotlin",
+    "C++"
+  ],
+  "Frameworks & Tools": [
+    "React",
+    "Flutter",
+    "TailwindCSS",
+    "Node.js",
+    "D3.js",
+    "Docker",
+    "Git",
+    "GitHub Actions",
+    "Meson/Ninja",
+    "GoReleaser"
+  ],
+  "Databases": [
+    "BoltDB",
+    "MySQL",
+    "PostgreSQL",
+    "MongoDB",
+    "Firebase"
+  ],
+  "Testing & Quality": [
+    "Unit/Integration/Fuzzing (AFL++)",
+    "CodeQL",
+    "Valgrind",
+    "AddressSanitizer"
+  ]
+}

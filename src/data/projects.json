@@ -1,0 +1,99 @@
+[
+  {
+    "slug": "dtvn",
+    "title": "DTVN — Distributed Ticket Validation Network",
+    "tagline": "Byzantine fault-tolerant P2P ticket validation system built in Go",
+    "description": "Event ticketing has a double-spend problem — how do you prevent the same ticket from being validated at two different gates simultaneously when you can't rely on a central server? DTVN solves this with a Byzantine fault-tolerant peer-to-peer network. Each validator node runs PBFT consensus to agree on ticket state changes, gossip protocols to disseminate messages, and vector clocks to resolve conflicts from concurrent updates. The system tolerates up to a third of its nodes being actively malicious and still reaches correct consensus. Built entirely in Go with libp2p for networking, Protobuf for wire format, and BoltDB for persistence — plus a D3.js dashboard that lets you visualize the live P2P mesh topology.",
+    "category": "networking",
+    "tech": ["Go", "libp2p", "PBFT", "Protobuf", "BoltDB", "D3.js", "WebSocket"],
+    "links": {
+      "github": "https://github.com/Hetti219/DTVN",
+      "live": null
+    },
+    "image": null,
+    "featured": true,
+    "highlights": [
+      "PBFT 3-phase consensus with view change recovery",
+      "Gossip protocol with Bloom filter deduplication and anti-entropy sync",
+      "libp2p networking with Kademlia DHT peer discovery",
+      "Vector clocks for causality tracking and conflict resolution",
+      "Web dashboard with D3.js network topology visualization",
+      "Byzantine fault tolerance simulator with network partition testing",
+      "~12,800 lines of Go with ~8,300 lines of tests"
+    ],
+    "stats": {
+      "commits": "330+",
+      "lines": "~12,800",
+      "tests": "~8,300 lines"
+    }
+  },
+  {
+    "slug": "tcp-syn-flood-detector",
+    "title": "TCP SYN Flood Detector",
+    "tagline": "High-performance userspace daemon for real-time DDoS detection and mitigation",
+    "description": "A C11 daemon that detects and mitigates TCP SYN flood attacks through real-time packet inspection via netfilter/NFQUEUE, sliding window rate limiting, and automatic ipset-based firewall rule management. Handles 65,000+ SYN packets/second at ~45ms detection latency. Built with a V-Model SDLC approach, including 13 test suites with AFL++ fuzzing and CodeQL security scanning.",
+    "category": "security",
+    "tech": ["C", "Linux Kernel", "netfilter", "NFQUEUE", "ipset", "BPF", "Meson"],
+    "links": {
+      "github": "https://github.com/Hetti219/TCP-SYN-Flood-Detector",
+      "live": null
+    },
+    "image": null,
+    "featured": true,
+    "highlights": [
+      "65,000+ PPS throughput with ~45ms detection latency",
+      "Dual capture: NFQUEUE (primary) and raw socket + BPF (fallback)",
+      "Sliding window rate limiting with /proc/net/tcp SYN_RECV validation",
+      "13 test suites including AFL++ fuzzing",
+      "Security-hardened: CAP_NET_ADMIN + CAP_NET_RAW only, no full root",
+      "CodeQL security scanning and CI/CD pipeline"
+    ],
+    "stats": {
+      "commits": "101+",
+      "lines": null,
+      "tests": "13 suites"
+    }
+  },
+  {
+    "slug": "exif-toolkit",
+    "title": "EXIF Toolkit",
+    "tagline": "Mobile forensics tool for image metadata manipulation",
+    "description": "A Flutter/Firebase mobile application for viewing, editing, and stripping EXIF metadata from images. Built for digital forensics and privacy-conscious users who need control over what data their photos carry. Features cloud integration for persistent storage and cross-platform mobile support.",
+    "category": "security",
+    "tech": ["Flutter", "Dart", "Firebase"],
+    "links": {
+      "github": "https://github.com/Hetti219/EXIF_toolkit",
+      "live": null
+    },
+    "image": null,
+    "featured": true,
+    "highlights": [
+      "View, edit, and strip EXIF metadata",
+      "Firebase cloud integration",
+      "Cross-platform mobile support",
+      "Digital forensics and privacy use cases"
+    ],
+    "stats": null
+  },
+  {
+    "slug": "maskbook",
+    "title": "MaskBook",
+    "tagline": "Full-stack social platform with authentication and real-time features",
+    "description": "A complete social media platform built with PHP and MySQL, featuring user authentication, real-time interactions, and a responsive UI. Demonstrates full-stack web development ability from database design through to frontend implementation.",
+    "category": "fullstack",
+    "tech": ["HTML", "CSS", "JavaScript", "PHP", "MySQL"],
+    "links": {
+      "github": null,
+      "live": "https://mask-book.atwebpages.com/"
+    },
+    "image": null,
+    "featured": false,
+    "highlights": [
+      "User authentication and session management",
+      "Real-time social interactions",
+      "MySQL database design",
+      "Responsive frontend"
+    ],
+    "stats": null
+  }
+]
