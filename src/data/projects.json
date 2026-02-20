@@ -65,7 +65,7 @@
       "github": "https://github.com/Hetti219/EXIF_toolkit",
       "live": null
     },
-    "image": null,
+    "image": "src/assets/images/projects/exif_toolkit.png",
     "featured": true,
     "highlights": [
       "View, edit, and strip EXIF metadata",
