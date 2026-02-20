@@ -35,6 +35,13 @@ export default function ProjectDetail({ project }) {
         ))}
       </div>
 
+      {/* Project image */}
+      {project.image && (
+        <div className="mb-8 rounded-xl overflow-hidden border border-charcoal-light">
+          <img src={project.image} alt={project.title} className="w-full object-cover" />
+        </div>
+      )}
+
       {/* Links */}
       <div className="flex gap-3 mb-10">
         {project.links.github && (
