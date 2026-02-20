@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import SectionHeading from '../components/shared/SectionHeading'
 import Button from '../components/shared/Button'
 
@@ -10,25 +9,6 @@ const contactLinks = [
 ]
 
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' })
-  const [submitted, setSubmitted] = useState(false)
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    try {
-      await fetch('https://formspree.io/f/xpwdkjab', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-      setSubmitted(true)
-      setFormData({ name: '', email: '', message: '' })
-    } catch {
-      // Fallback: open email
-      window.location.href = `mailto:sathikahettiarachchi219@gmail.com?subject=Portfolio Contact from ${formData.name}&body=${formData.message}`
-    }
-  }
-
   return (
     <section className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,71 +17,25 @@ export default function Contact() {
         </SectionHeading>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <div>
-            {submitted ? (
-              <div className="bg-charcoal rounded-xl border border-emerald/30 p-8 text-center">
-                <div className="text-emerald text-4xl mb-4">✓</div>
-                <h3 className="text-xl font-semibold text-off-white mb-2">Message Sent</h3>
-                <p className="text-slate-text">Thanks for reaching out. I'll get back to you soon.</p>
-                <button
-                  onClick={() => setSubmitted(false)}
-                  className="mt-4 text-sm text-cyan hover:underline font-mono"
-                >
-                  Send another message
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-mono text-slate-text mb-1.5">Name</label>
-                  <input
-                    id="name"
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-charcoal border border-charcoal-light rounded-lg text-off-white placeholder-slate-text/50 focus:border-cyan focus:outline-none transition-colors"
-                    placeholder="Your name"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-mono text-slate-text mb-1.5">Email</label>
-                  <input
-                    id="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={e => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-charcoal border border-charcoal-light rounded-lg text-off-white placeholder-slate-text/50 focus:border-cyan focus:outline-none transition-colors"
-                    placeholder="you@example.com"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="message" className="block text-sm font-mono text-slate-text mb-1.5">Message</label>
-                  <textarea
-                    id="message"
-                    required
-                    rows={5}
-                    value={formData.message}
-                    onChange={e => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3 bg-charcoal border border-charcoal-light rounded-lg text-off-white placeholder-slate-text/50 focus:border-cyan focus:outline-none transition-colors resize-none"
-                    placeholder="What's on your mind?"
-                  />
-                </div>
-                <Button type="submit">
-                  Send Message
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </Button>
-              </form>
-            )}
+          {/* CTA */}
+          <div className="flex flex-col justify-center">
+            <p className="text-slate-text text-lg leading-relaxed mb-6">
+              The best way to reach me is via email. Whether it's about a job opportunity,
+              a collaboration, or just a question — I'd love to hear from you.
+            </p>
+            <div>
+              <Button href="mailto:sathikahettiarachchi219@gmail.com">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Send Me an Email
+              </Button>
+            </div>
           </div>
 
           {/* Contact Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-off-white mb-4">Or reach out directly</h3>
+            <h3 className="text-lg font-semibold text-off-white mb-4">Find me on</h3>
             {contactLinks.map(link => (
               <a
                 key={link.label}
