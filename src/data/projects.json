@@ -5,7 +5,15 @@
     "tagline": "Byzantine fault-tolerant P2P ticket validation system built in Go",
     "description": "Event ticketing has a double-spend problem — how do you prevent the same ticket from being validated at two different gates simultaneously when you can't rely on a central server? DTVN solves this with a Byzantine fault-tolerant peer-to-peer network. Each validator node runs PBFT consensus to agree on ticket state changes, gossip protocols to disseminate messages, and vector clocks to resolve conflicts from concurrent updates. The system tolerates up to a third of its nodes being actively malicious and still reaches correct consensus. Built entirely in Go with libp2p for networking, Protobuf for wire format, and BoltDB for persistence — plus a D3.js dashboard that lets you visualize the live P2P mesh topology.",
     "category": "networking",
-    "tech": ["Go", "libp2p", "PBFT", "Protobuf", "BoltDB", "D3.js", "WebSocket"],
+    "tech": [
+      "Go",
+      "libp2p",
+      "PBFT",
+      "Protobuf",
+      "BoltDB",
+      "D3.js",
+      "WebSocket"
+    ],
     "links": {
       "github": "https://github.com/Hetti219/DTVN",
       "live": null
@@ -33,7 +41,15 @@
     "tagline": "High-performance userspace daemon for real-time DDoS detection and mitigation",
     "description": "A C11 daemon that detects and mitigates TCP SYN flood attacks through real-time packet inspection via netfilter/NFQUEUE, sliding window rate limiting, and automatic ipset-based firewall rule management. Handles 65,000+ SYN packets/second at ~45ms detection latency. Built with a V-Model SDLC approach, including 13 test suites with AFL++ fuzzing and CodeQL security scanning.",
     "category": "security",
-    "tech": ["C", "Linux Kernel", "netfilter", "NFQUEUE", "ipset", "BPF", "Meson"],
+    "tech": [
+      "C",
+      "Linux Kernel",
+      "netfilter",
+      "NFQUEUE",
+      "ipset",
+      "BPF",
+      "Meson"
+    ],
     "links": {
       "github": "https://github.com/Hetti219/TCP-SYN-Flood-Detector",
       "live": null
@@ -60,7 +76,11 @@
     "tagline": "Mobile forensics tool for image metadata manipulation",
     "description": "A Flutter/Firebase mobile application for viewing, editing, and stripping EXIF metadata from images. Built for digital forensics and privacy-conscious users who need control over what data their photos carry. Features cloud integration for persistent storage and cross-platform mobile support.",
     "category": "security",
-    "tech": ["Flutter", "Dart", "Firebase"],
+    "tech": [
+      "Flutter",
+      "Dart",
+      "Firebase"
+    ],
     "links": {
       "github": "https://github.com/Hetti219/EXIF_toolkit",
       "live": null
@@ -81,12 +101,18 @@
     "tagline": "Full-stack social platform with authentication and real-time features",
     "description": "A complete social media platform built with PHP and MySQL, featuring user authentication, real-time interactions, and a responsive UI. Demonstrates full-stack web development ability from database design through to frontend implementation.",
     "category": "fullstack",
-    "tech": ["HTML", "CSS", "JavaScript", "PHP", "MySQL"],
+    "tech": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "PHP",
+      "MySQL"
+    ],
     "links": {
       "github": null,
       "live": "https://mask-book.atwebpages.com/"
     },
-    "image": null,
+    "image": "/images/projects/maskbook.jpg",
     "featured": false,
     "highlights": [
       "User authentication and session management",
