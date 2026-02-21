@@ -26,11 +26,10 @@ export default function Navbar() {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`text-sm transition-colors ${
-                  location.pathname === link.to
+                className={`text-sm transition-colors ${location.pathname === link.to
                     ? 'text-cyan'
                     : 'text-slate-text hover:text-off-white'
-                }`}
+                  }`}
               >
                 {link.label}
               </Link>
@@ -74,11 +73,10 @@ export default function Navbar() {
                 key={link.to}
                 to={link.to}
                 onClick={() => setMobileOpen(false)}
-                className={`block py-2 text-sm transition-colors ${
-                  location.pathname === link.to
+                className={`block py-2 text-sm transition-colors ${location.pathname === link.to
                     ? 'text-cyan'
                     : 'text-slate-text hover:text-off-white'
-                }`}
+                  }`}
               >
                 {link.label}
               </Link>
