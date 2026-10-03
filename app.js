@@ -100,6 +100,19 @@ export function nodeToJson(n) {
   return JSON.stringify(n, null, 2)
 }
 
+/**
+ * §4.1 footer latency. Takes the load time in milliseconds — `performance.now()`
+ * sampled inside the load listener, which is the navigation duration without
+ * needing the navigation entry (whose own `duration` reads 0 until
+ * `loadEventEnd` is written, so reading it early yields a confident false
+ * `0ms`). When there is no usable measurement, say so rather than print a
+ * number we made up.
+ */
+export function formatLatency(ms) {
+  const d = Math.round(Number(ms))
+  return Number.isFinite(d) && d > 0 ? `${d}ms` : '—'
+}
+
 /** §8/04 — the dispatch destination. Not a placeholder: this is the real inbox. */
 export const DISPATCH_TO = 'sathikahettiarachchi219@gmail.com'
 
@@ -637,9 +650,10 @@ if (typeof document !== 'undefined') {
 
   /* ------------------------- §4.1 anchored footer ------------------------ */
 
-  const navEntry = performance.getEntriesByType?.('navigation')?.[0]
-  const latency = $('latency')
-  if (latency && navEntry) latency.textContent = `${Math.round(navEntry.duration)}ms`
+  addEventListener('load', () => {
+    const latency = $('latency')
+    if (latency) latency.textContent = formatLatency(performance.now())
+  })
 
   // §6.1 deep link. Reads INITIAL_HASH, not location.hash — setChannel has
   // already rewritten the latter to the bare channel name.
