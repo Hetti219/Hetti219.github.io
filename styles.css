@@ -1,0 +1,863 @@
+/* ==========================================================================
+   System Operator Portfolio — design tokens (§2), typography (§3), motion (§5)
+   ========================================================================== */
+
+:root {
+  /* §2.1 Colour matrix — "5:00 AM Cold Autumn Mist & Obsidian" */
+  --color-bg-base: #07090E;
+  --color-bg-surface: #0D1117;
+  --color-bg-elevated: #131924;
+  --color-border-mist: #1E2533;
+  --color-border-hard: #2A3447;
+  --color-text-bone: #E2E5EC;
+  --color-text-muted: #8490A6;
+  --color-cobalt-glow: #2563EB;
+  --color-cobalt-pulse: #3B82F6;
+
+  /* §3.1 Font stack */
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+  --font-grotesk: 'Space Grotesk', system-ui, sans-serif;
+
+  /* §3.2 Scale & hierarchy matrix */
+  --fs-overline: 10px;
+  --fs-timestamp: 11px;
+  --fs-body: 12px;
+  --fs-section: 14px;
+  --fs-node: 18px;
+  --fs-ident: 24px;
+
+  /* §5.1 Vault-door inertia physics */
+  --ease-vault: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-vault: 380ms;
+}
+
+/* §2.2 Panel finish: drywall/ceramic tactility. Zero radius, no blur. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+html {
+  background: var(--color-bg-base);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--color-text-bone);
+  background-color: var(--color-bg-base);
+  /* §2.2 Simulated hairline coordinate grid. The CSS value (32px) is
+     authoritative over the prose (24px) — see design spec §4.3. */
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(30, 37, 51, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 37, 51, 0.35) 1px, transparent 1px);
+}
+
+/* §2.2 Selection: cold cobalt fill, crisp white contrast. */
+::selection {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+
+.overline {
+  font-size: var(--fs-overline);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+a {
+  color: inherit;
+}
+
+/* Accessible focus ring, in the cobalt accent (§9). */
+:focus-visible {
+  outline: 2px solid var(--color-cobalt-glow);
+  outline-offset: 2px;
+}
+
+/* Grid children must be allowed to shrink below their content width or
+   long unbroken paths blow the layout out on narrow viewports. */
+.explorer > *,
+.runlevels > div > *,
+.log__entry > * {
+  min-width: 0;
+}
+
+/* §5.1 Vault-door motion — reduced-motion users get the resting state
+   immediately. Not decoration: a 380ms slide is a vestibular trigger. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   §8/01 Chronograph telemetry header
+   ========================================================================== */
+
+/* §8/01 — 6px square escapement diode. Square, not round: zero radius holds. */
+.led {
+  width: 6px;
+  height: 6px;
+  background: var(--color-cobalt-pulse);
+  transition: opacity 120ms linear; /* §5.2 pulse 1.0 → 0.2 in 120ms */
+}
+
+.chrono {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 0 14px;
+  background: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-mist);
+  font-size: var(--fs-timestamp);
+  color: var(--color-text-muted);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.chrono__seg {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.chrono__seg--end {
+  margin-left: auto;
+  gap: 10px;
+}
+
+.chrono__node {
+  color: var(--color-text-bone);
+}
+
+.toggle {
+  font: inherit;
+  font-size: var(--fs-timestamp);
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border-mist);
+  padding: 3px 9px;
+  cursor: pointer;
+  transition:
+    color var(--dur-vault) var(--ease-vault),
+    border-color var(--dur-vault) var(--ease-vault);
+}
+
+.toggle[aria-pressed="true"] {
+  color: var(--color-text-bone);
+  border-color: var(--color-cobalt-pulse);
+}
+
+/* ==========================================================================
+   §8/02 Mechanical channel selector
+   Zero margins between tabs, 1px internal separators, 0ms click latency.
+   ========================================================================== */
+
+.channels {
+  display: flex;
+  border-bottom: 1px solid var(--color-border-mist);
+  background: var(--color-bg-surface);
+  overflow-x: auto;
+}
+
+.channels button {
+  font: inherit;
+  font-size: var(--fs-timestamp);
+  background: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  border: 0;
+  border-right: 1px solid var(--color-border-mist);
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  padding: 9px 16px;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  white-space: nowrap;
+  transition:
+    color var(--dur-vault) var(--ease-vault),
+    background-color var(--dur-vault) var(--ease-vault);
+}
+
+.channels button[aria-selected="true"] {
+  color: var(--color-text-bone);
+  background: #101A2E;
+  border-top-color: var(--color-cobalt-pulse);
+  box-shadow: inset 0 -1px 0 var(--color-cobalt-pulse);
+}
+
+.channels button[aria-selected="false"] .glyph {
+  color: var(--color-border-hard);
+}
+
+.channels button[aria-selected="true"] .glyph {
+  color: var(--color-cobalt-pulse);
+}
+
+.channels button:focus-visible {
+  outline: 2px solid var(--color-cobalt-glow);
+  outline-offset: -2px;
+}
+
+/* §5.1 — content swaps in place using the vault-door fade. */
+.channel {
+  animation: vault var(--dur-vault) var(--ease-vault);
+}
+
+@keyframes vault {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   §1.3 / §4.2 Corner-anchored doctrine block
+   ========================================================================== */
+
+.doctrine {
+  padding: 26px 16px 22px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.doctrine__name {
+  font-family: var(--font-grotesk);
+  font-size: var(--fs-ident);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.doctrine__role {
+  margin: 6px 0 0;
+}
+
+.doctrine__statement {
+  max-width: 78ch;
+  color: var(--color-text-bone);
+  margin: 14px 0 0;
+}
+
+.doctrine__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: 18px 0 0;
+}
+
+.doctrine__facts > div {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.doctrine__facts dt,
+.doctrine__facts dd {
+  margin: 0;
+}
+
+.doctrine__facts dd {
+  color: var(--color-text-bone);
+}
+
+/* ==========================================================================
+   §8/03 Split directory explorer & inspector (5 columns / 7 columns)
+   ========================================================================== */
+
+.explorer {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  border-top: 1px solid var(--color-border-mist);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+@media (max-width: 860px) {
+  .explorer {
+    grid-template-columns: 1fr;
+  }
+}
+
+.explorer__tree {
+  border-right: 1px solid var(--color-border-mist);
+}
+
+.explorer__inspector {
+  min-width: 0;
+}
+
+/* --- Left panel: filter + tags + tree --- */
+
+.filter {
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border-mist);
+  position: relative;
+}
+
+.filter input {
+  width: 100%;
+  font: inherit;
+  color: var(--color-text-bone);
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border-mist);
+  padding: 6px 26px 6px 8px;
+}
+
+.filter input:focus {
+  outline: none;
+  border-color: var(--color-cobalt-pulse);
+}
+
+.filter__hint {
+  position: absolute;
+  right: 22px;
+  top: 34px;
+  pointer-events: none;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 9px;
+  flex-wrap: wrap;
+}
+
+.tags button {
+  font: inherit;
+  font-size: var(--fs-overline);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-mist);
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.tags button[aria-pressed="true"] {
+  color: var(--color-text-bone);
+  border-color: var(--color-cobalt-pulse);
+}
+
+.tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tree__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 0;
+  border-bottom: 1px solid var(--color-border-mist);
+  padding: 9px 12px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.tree__item:hover {
+  background: var(--color-bg-surface);
+  color: var(--color-text-bone);
+}
+
+.tree__item[aria-current="true"] {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-bone);
+  box-shadow: inset 2px 0 0 var(--color-cobalt-pulse);
+}
+
+.tree__item .glyph {
+  color: var(--color-cobalt-pulse);
+  margin-right: 8px;
+}
+
+/* --- Right panel: the node inspector --- */
+
+.node {
+  padding: 20px;
+  border-bottom: 1px solid var(--color-border-mist);
+}
+
+.node__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.node__title {
+  font-family: var(--font-grotesk);
+  font-size: var(--fs-node);
+  font-weight: 700;
+  margin: 0;
+}
+
+.node__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.node__tagline {
+  color: var(--color-text-muted);
+  margin: 6px 0 0;
+}
+
+.node__desc {
+  margin: 12px 0 0;
+  max-width: 88ch;
+}
+
+.node__highlights {
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+
+.node__highlights li {
+  margin: 3px 0;
+}
+
+.tag {
+  font-size: var(--fs-overline);
+  letter-spacing: 0.08em;
+  border: 1px solid var(--color-cobalt-pulse);
+  color: var(--color-cobalt-pulse);
+  padding: 2px 7px;
+}
+
+/* §8/03 — metric key-value grid, 1px border cells. */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  border: 1px solid var(--color-border-mist);
+  margin: 14px 0 0;
+}
+
+.metrics > div {
+  border-right: 1px solid var(--color-border-mist);
+  border-bottom: 1px solid var(--color-border-mist);
+  padding: 8px 10px;
+}
+
+.metrics dt,
+.metrics dd {
+  margin: 0;
+}
+
+.metrics dd {
+  margin-top: 3px;
+  color: var(--color-text-bone);
+}
+
+/* §8/03 — schema snippet box. */
+.schema {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-mist);
+  padding: 12px;
+  overflow-x: auto;
+  margin: 14px 0 0;
+  font-size: var(--fs-timestamp);
+  line-height: 1.7;
+}
+
+.schema code {
+  font-family: var(--font-mono);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.actions button,
+.actions a {
+  font: inherit;
+  font-size: var(--fs-timestamp);
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border-mist);
+  padding: 5px 11px;
+  cursor: pointer;
+}
+
+.actions button:hover,
+.actions a:hover {
+  color: var(--color-text-bone);
+  border-color: var(--color-cobalt-pulse);
+}
+
+/* --------------------------------------------------------------------------
+   Progressive enhancement contract.
+   Without JS the filter, tree, telemetry toggles and copy actions are inert
+   controls that do nothing when clicked: hide them. The channel tabs are
+   inert too, so every channel is un-hidden and stacked in document order,
+   and all four project articles read as plain crawlable content. With JS,
+   the vault doors and the split explorer take over.
+   -------------------------------------------------------------------------- */
+
+html:not(.js) .filter,
+html:not(.js) .tree,
+html:not(.js) [data-action],
+html:not(.js) .toggle,
+html:not(.js) #llms-open {
+  display: none;
+}
+
+html:not(.js) .channel[hidden] {
+  display: block;
+}
+
+html:not(.js) .channels {
+  display: none;
+}
+
+html:not(.js) .explorer {
+  grid-template-columns: 1fr;
+}
+
+html:not(.js) .explorer__tree {
+  border-right: 0;
+}
+
+html:not(.js) .node {
+  border-top: 1px solid var(--color-border-mist);
+}
+
+/* ==========================================================================
+   §6.2 / §6.3 Spec sheets — runlevels and the chrono audit log
+   ========================================================================== */
+
+.spec-sheet {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px 16px;
+}
+
+.spec-sheet__title {
+  margin: 0 0 16px;
+}
+
+.runlevels {
+  margin: 0;
+  border-top: 1px solid var(--color-border-mist);
+}
+
+.runlevels > div {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 0 20px;
+  border-bottom: 1px solid var(--color-border-mist);
+  padding: 13px 0;
+}
+
+@media (max-width: 640px) {
+  .runlevels > div {
+    grid-template-columns: 1fr;
+  }
+}
+
+.runlevels dt {
+  color: var(--color-cobalt-pulse);
+  font-size: var(--fs-timestamp);
+  letter-spacing: 0.08em;
+}
+
+.runlevels dd {
+  margin: 0 0 5px;
+  color: var(--color-text-bone);
+}
+
+.runlevels dd:last-child {
+  margin-bottom: 0;
+}
+
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-mist);
+}
+
+.log__entry {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 0 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border-mist);
+}
+
+@media (max-width: 640px) {
+  .log__entry {
+    grid-template-columns: 1fr;
+  }
+}
+
+.log__stamp {
+  color: var(--color-cobalt-pulse);
+  font-size: var(--fs-timestamp);
+}
+
+.log__title {
+  font-family: var(--font-grotesk);
+  font-size: var(--fs-section);
+  font-weight: 700;
+  margin: 0;
+}
+
+.log__org {
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+}
+
+.log__desc {
+  margin: 8px 0 0;
+  max-width: 78ch;
+}
+
+/* ==========================================================================
+   §8/04 Terminal dispatch form
+   ========================================================================== */
+
+.dispatch {
+  display: grid;
+  gap: 5px;
+  max-width: 74ch;
+}
+
+.dispatch label {
+  margin-top: 12px;
+}
+
+.dispatch input,
+.dispatch select,
+.dispatch textarea {
+  font: inherit;
+  color: var(--color-text-bone);
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border-mist);
+  padding: 7px 9px;
+  width: 100%;
+}
+
+/* §8/04 validation state — high-contrast cobalt focus, no outline. */
+.dispatch input:focus,
+.dispatch select:focus,
+.dispatch textarea:focus {
+  border-color: #3B82F6;
+  outline: none;
+}
+
+.dispatch textarea {
+  resize: vertical;
+}
+
+#d-count {
+  color: var(--color-cobalt-pulse);
+}
+
+.dispatch button {
+  font: inherit;
+  margin-top: 16px;
+  justify-self: start;
+  color: var(--color-bg-base);
+  background: var(--color-cobalt-pulse);
+  border: 1px solid var(--color-cobalt-pulse);
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background-color var(--dur-vault) var(--ease-vault);
+}
+
+/* Inverts to an outline rather than brightening the fill: cobalt-glow behind
+   12px text is 3.85:1, under the 4.5:1 AA floor. Cobalt-pulse text on the base
+   ground is 5.41:1, and it is the hover idiom the rest of this sheet uses. */
+.dispatch button:hover {
+  color: var(--color-cobalt-pulse);
+  background: transparent;
+}
+
+.channels-list {
+  margin: 30px 0 0;
+  border-top: 1px solid var(--color-border-mist);
+  max-width: 74ch;
+}
+
+.channels-list > div {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-border-mist);
+}
+
+.channels-list dt,
+.channels-list dd {
+  margin: 0;
+}
+
+.channels-list a {
+  color: var(--color-text-bone);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border-hard);
+  overflow-wrap: anywhere;
+}
+
+.channels-list a:hover {
+  color: var(--color-cobalt-pulse);
+  border-bottom-color: var(--color-cobalt-pulse);
+}
+
+/* ==========================================================================
+   §7.1 Dual-optic symmetry — MACHINE rendering.
+   Chrome and panels are hidden; only the model survives.
+   ========================================================================== */
+
+html.optic-machine .chrono,
+html.optic-machine .channels,
+html.optic-machine .channel {
+  display: none;
+}
+
+.machine {
+  margin: 0;
+  padding: 22px 16px;
+  max-width: 100ch;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  color: var(--color-text-bone);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+html:not(.optic-machine) .machine {
+  display: none;
+}
+
+/* ==========================================================================
+   §7.3 llms.txt drawer
+   ========================================================================== */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(7, 9, 14, 0.86);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal__panel {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-hard);
+  width: min(880px, 100%);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border-mist);
+}
+
+.modal__head .overline {
+  flex: 1;
+}
+
+.modal__head button {
+  font: inherit;
+  font-size: var(--fs-timestamp);
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-mist);
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.modal__head button:hover {
+  color: var(--color-text-bone);
+  border-color: var(--color-cobalt-pulse);
+}
+
+.modal__body {
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  white-space: pre-wrap;
+  color: var(--color-text-bone);
+}
+
+/* ==========================================================================
+   §4.1 Anchored footer
+   ========================================================================== */
+
+.anchored {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 12px 16px;
+  margin-top: 30px;
+  border-top: 1px solid var(--color-border-mist);
+  font-size: var(--fs-timestamp);
+  color: var(--color-text-muted);
+}
+
+.anchored button {
+  font: inherit;
+  font-size: var(--fs-timestamp);
+  background: transparent;
+  color: var(--color-cobalt-pulse);
+  border: 1px solid var(--color-border-mist);
+  padding: 3px 9px;
+  cursor: pointer;
+}
+
+.anchored button:hover {
+  border-color: var(--color-cobalt-pulse);
+}

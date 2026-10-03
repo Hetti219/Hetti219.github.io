@@ -18,6 +18,7 @@ Thumbs.db
 # AI assistant config
 CLAUDE.md
 docs/
+.superpowers/
 
 # Debug & logs
 npm-debug.log*

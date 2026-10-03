@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Machine manifest: /llms.txt
