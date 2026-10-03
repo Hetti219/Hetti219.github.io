@@ -1,20 +1,53 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Sathika Hettiarachchi — Computer Networks graduate and software developer specializing in distributed systems, network security tools, and full-stack applications." />
-    <meta property="og:title" content="Sathika Hettiarachchi | Portfolio" />
-    <meta property="og:description" content="Network Engineer × Software Developer" />
-    <meta property="og:url" content="https://hetti219.github.io" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <title>Sathika Hettiarachchi | Portfolio</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sathika Hettiarachchi — Network &amp; Systems Engineer</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="Sathika Hettiarachchi — Computer Networks graduate and software developer specializing in distributed systems, network security tools, and full-stack applications.">
+<meta property="og:title" content="Sathika Hettiarachchi | Portfolio">
+<meta property="og:description" content="Network Engineer × Software Developer">
+<meta property="og:url" content="https://hetti219.github.io">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<!-- §8/01 Chronograph telemetry header -->
+<header class="chrono" id="chrono">
+  <span class="chrono__seg">
+    <span class="led" id="led" aria-hidden="true"></span>
+    <span class="chrono__node">NODE//SYS-0x89</span>
+  </span>
+  <span class="chrono__seg"><span class="overline">UTC</span> <span id="utc">--:--:--Z</span></span>
+  <span class="chrono__seg"><span class="overline">LOC</span> <span id="local">--:--:--</span></span>
+  <span class="chrono__seg"><span class="overline">DOM</span> <span id="dom-count">0</span></span>
+  <span class="chrono__seg"><span class="overline">VP</span> <span id="viewport">0×0</span></span>
+  <span class="chrono__seg chrono__seg--end">
+    <button type="button" id="audio-toggle" class="toggle" aria-pressed="false">AUDIO OFF</button>
+    <button type="button" id="optic-toggle" class="toggle" aria-pressed="false">OPTIC: GUI</button>
+  </span>
+</header>
+
+<!-- §8/02 Mechanical channel selector -->
+<nav class="channels" id="channel-bar" role="tablist" aria-label="Channels">
+  <button type="button" role="tab" data-channel="registry" aria-selected="true"><span class="glyph" aria-hidden="true">▸</span>01 REGISTRY</button>
+  <button type="button" role="tab" data-channel="schematics" aria-selected="false"><span class="glyph" aria-hidden="true">·</span>02 SCHEMATICS</button>
+  <button type="button" role="tab" data-channel="transmissions" aria-selected="false"><span class="glyph" aria-hidden="true">·</span>03 TRANSMISSIONS</button>
+  <button type="button" role="tab" data-channel="comm" aria-selected="false"><span class="glyph" aria-hidden="true">·</span>04 COMM // DISPATCH</button>
+</nav>
+
+<main id="viewport-root">
+  <section class="channel" id="channel-registry" role="tabpanel" aria-label="Registry"></section>
+  <section class="channel" id="channel-schematics" role="tabpanel" aria-label="Schematics" hidden></section>
+  <section class="channel" id="channel-transmissions" role="tabpanel" aria-label="Transmissions" hidden></section>
+  <section class="channel" id="channel-comm" role="tabpanel" aria-label="Comm" hidden></section>
+</main>
+
+<script type="module" src="/app.js"></script>
+</body>
 </html>
