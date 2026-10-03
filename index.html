@@ -42,7 +42,215 @@
 </nav>
 
 <main id="viewport-root">
-  <section class="channel" id="channel-registry" role="tabpanel" aria-label="Registry"></section>
+  <section class="channel" id="channel-registry" role="tabpanel" aria-label="Registry">
+
+    <!-- §1.3 / §4.2 — identity anchored to the perimeter, not a hero banner. -->
+    <div class="doctrine">
+      <h1 class="doctrine__name">Sathika Hettiarachchi</h1>
+      <p class="doctrine__role overline">Network Engineer × Software Developer</p>
+      <p class="doctrine__statement">I build the software that makes networks work — distributed consensus systems, packet-level DDoS mitigation, and the systems layer underneath both.</p>
+      <dl class="doctrine__facts">
+        <div><dt class="overline">Region</dt><dd id="region">—</dd></div>
+        <div><dt class="overline">Node</dt><dd>NODE//SYS-0x89</dd></div>
+        <div><dt class="overline">Standards</dt><dd>WCAG 2.2 AA · schema.org</dd></div>
+      </dl>
+    </div>
+
+    <!-- §8/03 Split directory explorer & inspector -->
+    <div class="explorer">
+
+      <div class="explorer__tree">
+        <div class="filter">
+          <label class="overline" for="registry-filter">Filter</label>
+          <input id="registry-filter" type="search" placeholder="path, title or stack" autocomplete="off" spellcheck="false">
+          <span class="filter__hint overline" aria-hidden="true">/</span>
+          <div class="tags" id="registry-tags" role="group" aria-label="Filter by subsystem">
+            <button type="button" data-tag="" aria-pressed="true">ALL</button>
+            <button type="button" data-tag="network" aria-pressed="false">NETWORK</button>
+            <button type="button" data-tag="security" aria-pressed="false">SECURITY</button>
+            <button type="button" data-tag="fullstack" aria-pressed="false">FULLSTACK</button>
+          </div>
+        </div>
+        <ul class="tree" id="registry-tree">
+          <li><button type="button" class="tree__item" data-node="dtvn"><span class="glyph" aria-hidden="true">▸</span>/network/consensus/dtvn</button></li>
+          <li><button type="button" class="tree__item" data-node="tcp-syn-flood-detector"><span class="glyph" aria-hidden="true">·</span>/security/kernel/tcp-syn-flood-detector</button></li>
+          <li><button type="button" class="tree__item" data-node="exif-toolkit"><span class="glyph" aria-hidden="true">·</span>/security/mobile/exif-toolkit</button></li>
+          <li><button type="button" class="tree__item" data-node="maskbook"><span class="glyph" aria-hidden="true">·</span>/fullstack/web/maskbook</button></li>
+        </ul>
+      </div>
+
+      <div class="explorer__inspector" id="registry-inspector">
+
+        <article class="node" id="node-dtvn"
+          data-slug="dtvn" data-path="/network/consensus/dtvn"
+          data-subsystem="network" data-category="consensus"
+          data-title="DTVN — Distributed Ticket Validation Network"
+          data-tagline="Byzantine fault-tolerant P2P ticket validation system built in Go"
+          data-status="VERIFIED" data-revision=""
+          data-repo="https://github.com/Hetti219/DTVN" data-live=""
+          data-tech="Go,libp2p,PBFT,Protobuf,BoltDB,D3.js,WebSocket">
+          <header class="node__head">
+            <h2 class="node__title">DTVN — Distributed Ticket Validation Network</h2>
+            <p class="node__meta">
+              <span class="tag tag--status">VERIFIED</span>
+              <span class="overline">REV</span> <span class="node__rev">—</span>
+            </p>
+          </header>
+          <p class="node__tagline">Byzantine fault-tolerant P2P ticket validation system built in Go</p>
+          <p class="node__desc">Event ticketing has a double-spend problem — how do you prevent the same ticket from being validated at two different gates simultaneously when you can't rely on a central server? DTVN solves this with a Byzantine fault-tolerant peer-to-peer network. Each validator node runs PBFT consensus to agree on ticket state changes, gossip protocols to disseminate messages, and vector clocks to resolve conflicts from concurrent updates. The system tolerates up to a third of its nodes being actively malicious and still reaches correct consensus. Built entirely in Go with libp2p for networking, Protobuf for wire format, and BoltDB for persistence — plus a D3.js dashboard that lets you visualize the live P2P mesh topology.</p>
+          <ul class="node__highlights">
+            <li>PBFT 3-phase consensus with view change recovery</li>
+            <li>Gossip protocol with Bloom filter deduplication and anti-entropy sync</li>
+            <li>libp2p networking with Kademlia DHT peer discovery</li>
+            <li>Vector clocks for causality tracking and conflict resolution</li>
+            <li>Web dashboard with D3.js network topology visualization</li>
+            <li>Byzantine fault tolerance simulator with network partition testing</li>
+            <li>~12,800 lines of Go with ~8,300 lines of tests</li>
+          </ul>
+          <dl class="metrics">
+            <div><dt class="overline">COMMITS</dt><dd>330+</dd></div>
+            <div><dt class="overline">LINES</dt><dd>~12,800</dd></div>
+            <div><dt class="overline">TESTS</dt><dd>~8,300 lines</dd></div>
+          </dl>
+          <pre class="schema"><code>node:      dtvn
+path:      /network/consensus/dtvn
+subsystem: network / consensus
+stack:     Go, libp2p, PBFT, Protobuf, BoltDB, D3.js, WebSocket
+fault:     tolerates f &lt; n/3 Byzantine</code></pre>
+          <div class="actions">
+            <button type="button" data-action="copy-spec">Copy Spec</button>
+            <button type="button" data-action="raw-json">Raw JSON</button>
+            <a href="https://github.com/Hetti219/DTVN" rel="noopener noreferrer">Source Repository</a>
+          </div>
+        </article>
+
+        <article class="node" id="node-tcp-syn-flood-detector"
+          data-slug="tcp-syn-flood-detector" data-path="/security/kernel/tcp-syn-flood-detector"
+          data-subsystem="security" data-category="kernel"
+          data-title="TCP SYN Flood Detector"
+          data-tagline="High-performance userspace daemon for real-time DDoS detection and mitigation"
+          data-status="VERIFIED" data-revision=""
+          data-repo="https://github.com/Hetti219/TCP-SYN-Flood-Detector" data-live=""
+          data-tech="C,Linux Kernel,netfilter,NFQUEUE,ipset,BPF,Meson">
+          <header class="node__head">
+            <h2 class="node__title">TCP SYN Flood Detector</h2>
+            <p class="node__meta">
+              <span class="tag tag--status">VERIFIED</span>
+              <span class="overline">REV</span> <span class="node__rev">—</span>
+            </p>
+          </header>
+          <p class="node__tagline">High-performance userspace daemon for real-time DDoS detection and mitigation</p>
+          <p class="node__desc">A C11 daemon that detects and mitigates TCP SYN flood attacks through real-time packet inspection via netfilter/NFQUEUE, sliding window rate limiting, and automatic ipset-based firewall rule management. Handles 65,000+ SYN packets/second at ~45ms detection latency. Built with a V-Model SDLC approach, including 13 test suites with AFL++ fuzzing and CodeQL security scanning.</p>
+          <ul class="node__highlights">
+            <li>65,000+ PPS throughput with ~45ms detection latency</li>
+            <li>Dual capture: NFQUEUE (primary) and raw socket + BPF (fallback)</li>
+            <li>Sliding window rate limiting with /proc/net/tcp SYN_RECV validation</li>
+            <li>13 test suites including AFL++ fuzzing</li>
+            <li>Security-hardened: CAP_NET_ADMIN + CAP_NET_RAW only, no full root</li>
+            <li>CodeQL security scanning and CI/CD pipeline</li>
+          </ul>
+          <dl class="metrics">
+            <div><dt class="overline">COMMITS</dt><dd>101+</dd></div>
+            <div><dt class="overline">LINES</dt><dd>—</dd></div>
+            <div><dt class="overline">TESTS</dt><dd>13 suites</dd></div>
+            <div><dt class="overline">PPS</dt><dd>65,000+</dd></div>
+            <div><dt class="overline">LATENCY</dt><dd>~45ms</dd></div>
+          </dl>
+          <pre class="schema"><code>node:      tcp-syn-flood-detector
+path:      /security/kernel/tcp-syn-flood-detector
+subsystem: security / kernel
+stack:     C, Linux Kernel, netfilter, NFQUEUE, ipset, BPF, Meson
+verify:    13 suites + AFL++ fuzzing, CodeQL</code></pre>
+          <div class="actions">
+            <button type="button" data-action="copy-spec">Copy Spec</button>
+            <button type="button" data-action="raw-json">Raw JSON</button>
+            <a href="https://github.com/Hetti219/TCP-SYN-Flood-Detector" rel="noopener noreferrer">Source Repository</a>
+          </div>
+        </article>
+
+        <article class="node" id="node-exif-toolkit"
+          data-slug="exif-toolkit" data-path="/security/mobile/exif-toolkit"
+          data-subsystem="security" data-category="mobile"
+          data-title="EXIF Toolkit"
+          data-tagline="Mobile forensics tool for image metadata manipulation"
+          data-status="OPERATIONAL" data-revision=""
+          data-repo="https://github.com/Hetti219/EXIF_toolkit" data-live=""
+          data-tech="Flutter,Dart,Firebase">
+          <header class="node__head">
+            <h2 class="node__title">EXIF Toolkit</h2>
+            <p class="node__meta">
+              <span class="tag tag--status">OPERATIONAL</span>
+              <span class="overline">REV</span> <span class="node__rev">—</span>
+            </p>
+          </header>
+          <p class="node__tagline">Mobile forensics tool for image metadata manipulation</p>
+          <p class="node__desc">A Flutter/Firebase mobile application for viewing, editing, and stripping EXIF metadata from images. Built for digital forensics and privacy-conscious users who need control over what data their photos carry. Features cloud integration for persistent storage and cross-platform mobile support.</p>
+          <ul class="node__highlights">
+            <li>View, edit, and strip EXIF metadata</li>
+            <li>Firebase cloud integration</li>
+            <li>Cross-platform mobile support</li>
+            <li>Digital forensics and privacy use cases</li>
+          </ul>
+          <dl class="metrics">
+            <div><dt class="overline">COMMITS</dt><dd>—</dd></div>
+            <div><dt class="overline">LINES</dt><dd>—</dd></div>
+            <div><dt class="overline">TESTS</dt><dd>—</dd></div>
+          </dl>
+          <pre class="schema"><code>node:      exif-toolkit
+path:      /security/mobile/exif-toolkit
+subsystem: security / mobile
+stack:     Flutter, Dart, Firebase
+platform:  Flutter / Firebase</code></pre>
+          <div class="actions">
+            <button type="button" data-action="copy-spec">Copy Spec</button>
+            <button type="button" data-action="raw-json">Raw JSON</button>
+            <a href="https://github.com/Hetti219/EXIF_toolkit" rel="noopener noreferrer">Source Repository</a>
+          </div>
+        </article>
+
+        <article class="node" id="node-maskbook"
+          data-slug="maskbook" data-path="/fullstack/web/maskbook"
+          data-subsystem="fullstack" data-category="web"
+          data-title="MaskBook"
+          data-tagline="Full-stack social platform with authentication and real-time features"
+          data-status="OPERATIONAL" data-revision=""
+          data-repo="" data-live="https://mask-book.atwebpages.com/"
+          data-tech="HTML,CSS,JavaScript,PHP,MySQL">
+          <header class="node__head">
+            <h2 class="node__title">MaskBook</h2>
+            <p class="node__meta">
+              <span class="tag tag--status">OPERATIONAL</span>
+              <span class="overline">REV</span> <span class="node__rev">—</span>
+            </p>
+          </header>
+          <p class="node__tagline">Full-stack social platform with authentication and real-time features</p>
+          <p class="node__desc">A complete social media platform built with PHP and MySQL, featuring user authentication, real-time interactions, and a responsive UI. Demonstrates full-stack web development ability from database design through to frontend implementation.</p>
+          <ul class="node__highlights">
+            <li>User authentication and session management</li>
+            <li>Real-time social interactions</li>
+            <li>MySQL database design</li>
+            <li>Responsive frontend</li>
+          </ul>
+          <dl class="metrics">
+            <div><dt class="overline">COMMITS</dt><dd>—</dd></div>
+            <div><dt class="overline">LINES</dt><dd>—</dd></div>
+            <div><dt class="overline">TESTS</dt><dd>—</dd></div>
+          </dl>
+          <pre class="schema"><code>node:      maskbook
+path:      /fullstack/web/maskbook
+subsystem: fullstack / web
+stack:     HTML, CSS, JavaScript, PHP, MySQL
+deploy:    live at mask-book.atwebpages.com</code></pre>
+          <div class="actions">
+            <button type="button" data-action="copy-spec">Copy Spec</button>
+            <button type="button" data-action="raw-json">Raw JSON</button>
+            <a href="https://mask-book.atwebpages.com/" rel="noopener noreferrer">Live Deployment</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
   <section class="channel" id="channel-schematics" role="tabpanel" aria-label="Schematics" hidden></section>
   <section class="channel" id="channel-transmissions" role="tabpanel" aria-label="Transmissions" hidden></section>
   <section class="channel" id="channel-comm" role="tabpanel" aria-label="Comm" hidden></section>

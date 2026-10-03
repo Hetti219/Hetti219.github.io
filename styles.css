@@ -237,3 +237,288 @@ a {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   §1.3 / §4.2 Corner-anchored doctrine block
+   ========================================================================== */
+
+.doctrine {
+  padding: 26px 16px 22px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.doctrine__name {
+  font-family: var(--font-grotesk);
+  font-size: var(--fs-ident);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.doctrine__role {
+  margin: 6px 0 0;
+}
+
+.doctrine__statement {
+  max-width: 78ch;
+  color: var(--color-text-bone);
+  margin: 14px 0 0;
+}
+
+.doctrine__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: 18px 0 0;
+}
+
+.doctrine__facts > div {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.doctrine__facts dt,
+.doctrine__facts dd {
+  margin: 0;
+}
+
+.doctrine__facts dd {
+  color: var(--color-text-bone);
+}
+
+/* ==========================================================================
+   §8/03 Split directory explorer & inspector (5 columns / 7 columns)
+   ========================================================================== */
+
+.explorer {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  border-top: 1px solid var(--color-border-mist);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+@media (max-width: 860px) {
+  .explorer {
+    grid-template-columns: 1fr;
+  }
+}
+
+.explorer__tree {
+  border-right: 1px solid var(--color-border-mist);
+}
+
+.explorer__inspector {
+  min-width: 0;
+}
+
+/* --- Left panel: filter + tags + tree --- */
+
+.filter {
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border-mist);
+  position: relative;
+}
+
+.filter input {
+  width: 100%;
+  font: inherit;
+  color: var(--color-text-bone);
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border-mist);
+  padding: 6px 26px 6px 8px;
+}
+
+.filter input:focus {
+  outline: none;
+  border-color: var(--color-cobalt-pulse);
+}
+
+.filter__hint {
+  position: absolute;
+  right: 22px;
+  top: 34px;
+  pointer-events: none;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 9px;
+  flex-wrap: wrap;
+}
+
+.tags button {
+  font: inherit;
+  font-size: var(--fs-overline);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-mist);
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.tags button[aria-pressed="true"] {
+  color: var(--color-text-bone);
+  border-color: var(--color-cobalt-pulse);
+}
+
+.tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tree__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 0;
+  border-bottom: 1px solid var(--color-border-mist);
+  padding: 9px 12px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.tree__item:hover {
+  background: var(--color-bg-surface);
+  color: var(--color-text-bone);
+}
+
+.tree__item[aria-current="true"] {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-bone);
+  box-shadow: inset 2px 0 0 var(--color-cobalt-pulse);
+}
+
+.tree__item .glyph {
+  color: var(--color-cobalt-pulse);
+  margin-right: 8px;
+}
+
+/* --- Right panel: the node inspector --- */
+
+.node {
+  padding: 20px;
+  border-bottom: 1px solid var(--color-border-mist);
+}
+
+.node__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.node__title {
+  font-family: var(--font-grotesk);
+  font-size: var(--fs-node);
+  font-weight: 700;
+  margin: 0;
+}
+
+.node__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.node__tagline {
+  color: var(--color-text-muted);
+  margin: 6px 0 0;
+}
+
+.node__desc {
+  margin: 12px 0 0;
+  max-width: 88ch;
+}
+
+.node__highlights {
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+
+.node__highlights li {
+  margin: 3px 0;
+}
+
+.tag {
+  font-size: var(--fs-overline);
+  letter-spacing: 0.08em;
+  border: 1px solid var(--color-cobalt-pulse);
+  color: var(--color-cobalt-pulse);
+  padding: 2px 7px;
+}
+
+/* §8/03 — metric key-value grid, 1px border cells. */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  border: 1px solid var(--color-border-mist);
+  margin: 14px 0 0;
+}
+
+.metrics > div {
+  border-right: 1px solid var(--color-border-mist);
+  border-bottom: 1px solid var(--color-border-mist);
+  padding: 8px 10px;
+}
+
+.metrics dt,
+.metrics dd {
+  margin: 0;
+}
+
+.metrics dd {
+  margin-top: 3px;
+  color: var(--color-text-bone);
+}
+
+/* §8/03 — schema snippet box. */
+.schema {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-mist);
+  padding: 12px;
+  overflow-x: auto;
+  margin: 14px 0 0;
+  font-size: var(--fs-timestamp);
+  line-height: 1.7;
+}
+
+.schema code {
+  font-family: var(--font-mono);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.actions button,
+.actions a {
+  font: inherit;
+  font-size: var(--fs-timestamp);
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border-mist);
+  padding: 5px 11px;
+  cursor: pointer;
+}
+
+.actions button:hover,
+.actions a:hover {
+  color: var(--color-text-bone);
+  border-color: var(--color-cobalt-pulse);
+}
