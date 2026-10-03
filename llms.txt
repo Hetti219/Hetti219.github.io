@@ -1,0 +1,47 @@
+# Sathika Hettiarachchi — Network Engineer × Software Developer
+
+> Computer Networks graduate building distributed systems, network security tooling
+> and full-stack applications. Site: https://hetti219.github.io
+
+## Project Inventory
+
+- [DTVN — Distributed Ticket Validation Network](https://hetti219.github.io/#registry)
+  path: /network/consensus/dtvn
+  Byzantine fault-tolerant P2P ticket validation in Go. PBFT consensus, gossip
+  dissemination with Bloom filter deduplication, Kademlia DHT discovery, vector
+  clocks. Tolerates f < n/3 Byzantine nodes. ~12,800 lines, ~8,300 lines of tests.
+  Stack: Go, libp2p, PBFT, Protobuf, BoltDB, D3.js, WebSocket
+  Source: https://github.com/Hetti219/DTVN
+
+- [TCP SYN Flood Detector](https://hetti219.github.io/#registry)
+  path: /security/kernel/tcp-syn-flood-detector
+  Userspace C11 daemon for real-time DDoS detection and mitigation via
+  netfilter/NFQUEUE. 65,000+ packets/sec at ~45ms detection latency. 13 test
+  suites with AFL++ fuzzing and CodeQL scanning.
+  Stack: C, Linux Kernel, netfilter, NFQUEUE, ipset, BPF, Meson
+  Source: https://github.com/Hetti219/TCP-SYN-Flood-Detector
+
+- [EXIF Toolkit](https://hetti219.github.io/#registry)
+  path: /security/mobile/exif-toolkit
+  Flutter/Firebase mobile app for viewing, editing and stripping EXIF metadata
+  from images, for digital forensics and privacy.
+  Stack: Flutter, Dart, Firebase
+  Source: https://github.com/Hetti219/EXIF_toolkit
+
+- [MaskBook](https://hetti219.github.io/#registry)
+  path: /fullstack/web/maskbook
+  Full-stack social platform with authentication and real-time interactions.
+  Stack: HTML, CSS, JavaScript, PHP, MySQL
+  Live: https://mask-book.atwebpages.com/
+
+## Contact
+
+- Email: sathikahettiarachchi219@gmail.com
+- GitHub: https://github.com/Hetti219
+- LinkedIn: https://www.linkedin.com/in/sathika-hettiarachchi-516112303
+- Discord: https://discord.com/invite/nrhgUBNd
+
+## Machine-readable
+
+- JSON-LD: schema.org/Person with OfferCatalog, inlined in index.html
+- Press `M` on the site for a full Markdown rendering of every page datum
