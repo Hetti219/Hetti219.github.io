@@ -531,7 +531,8 @@ a {
    -------------------------------------------------------------------------- */
 
 html:not(.js) .filter,
-html:not(.js) .tree {
+html:not(.js) .tree,
+html:not(.js) [data-action] {
   display: none;
 }
 
@@ -691,8 +692,12 @@ html:not(.js) .node {
   transition: background-color var(--dur-vault) var(--ease-vault);
 }
 
+/* Inverts to an outline rather than brightening the fill: cobalt-glow behind
+   12px text is 3.85:1, under the 4.5:1 AA floor. Cobalt-pulse text on the base
+   ground is 5.41:1, and it is the hover idiom the rest of this sheet uses. */
 .dispatch button:hover {
-  background: var(--color-cobalt-glow);
+  color: var(--color-cobalt-pulse);
+  background: transparent;
 }
 
 .channels-list {
