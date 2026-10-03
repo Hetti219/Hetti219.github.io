@@ -14,6 +14,26 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap">
 <link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Sathika Hettiarachchi",
+  "jobTitle": "Network Engineer and Software Developer",
+  "url": "https://hetti219.github.io",
+  "knowsAbout": ["Distributed Systems", "Network Security", "P2P Networking", "Systems Programming", "Full-stack Development"],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Projects",
+    "itemListElement": [
+      { "@type": "SoftwareApplication", "name": "DTVN — Distributed Ticket Validation Network", "applicationCategory": "Networking", "description": "Byzantine fault-tolerant P2P ticket validation system in Go with PBFT consensus.", "url": "https://github.com/Hetti219/DTVN" },
+      { "@type": "SoftwareApplication", "name": "TCP SYN Flood Detector", "applicationCategory": "Security", "description": "Userspace C11 daemon for real-time DDoS detection and mitigation at 65,000 packets/sec.", "url": "https://github.com/Hetti219/TCP-SYN-Flood-Detector" },
+      { "@type": "SoftwareApplication", "name": "EXIF Toolkit", "applicationCategory": "Security", "description": "Flutter and Firebase mobile forensics tool for image metadata manipulation.", "url": "https://github.com/Hetti219/EXIF_toolkit" },
+      { "@type": "SoftwareApplication", "name": "MaskBook", "applicationCategory": "Social", "description": "Full-stack social platform with authentication and real-time interactions.", "url": "https://mask-book.atwebpages.com/" }
+    ]
+  }
+}
+</script>
 </head>
 <body>
 
@@ -251,10 +271,146 @@ deploy:    live at mask-book.atwebpages.com</code></pre>
       </div>
     </div>
   </section>
-  <section class="channel" id="channel-schematics" role="tabpanel" aria-label="Schematics" hidden></section>
-  <section class="channel" id="channel-transmissions" role="tabpanel" aria-label="Transmissions" hidden></section>
-  <section class="channel" id="channel-comm" role="tabpanel" aria-label="Comm" hidden></section>
+  <section class="channel" id="channel-schematics" role="tabpanel" aria-label="Schematics" hidden>
+    <div class="spec-sheet">
+      <h2 class="spec-sheet__title overline">Runlevel Specification</h2>
+      <dl class="runlevels">
+        <div>
+          <dt>R3 // SYSTEMS</dt>
+          <dd>Distributed Systems (PBFT, Gossip Protocols, Vector Clocks)</dd>
+          <dd>Network Security (Packet Inspection, DDoS Mitigation, netfilter/NFQUEUE)</dd>
+          <dd>P2P Networking (libp2p, Kademlia DHT, NAT Traversal)</dd>
+          <dd>Linux Internals (/proc, ipset, BPF, systemd)</dd>
+          <dd>Protocol Design (Protobuf, WebSocket, REST API)</dd>
+        </div>
+        <div>
+          <dt>R3 // PROVEN</dt>
+          <dd>Go</dd>
+          <dd>C</dd>
+          <dd>Dart</dd>
+          <dd>Python</dd>
+          <dd>JavaScript/TypeScript</dd>
+        </div>
+        <div>
+          <dt>R2 // FAMILIAR</dt>
+          <dd>Java</dd>
+          <dd>C#</dd>
+          <dd>PHP</dd>
+          <dd>Kotlin</dd>
+          <dd>C++</dd>
+        </div>
+        <div>
+          <dt>R1 // TOOLING</dt>
+          <dd>React</dd>
+          <dd>Flutter</dd>
+          <dd>TailwindCSS</dd>
+          <dd>Node.js</dd>
+          <dd>D3.js</dd>
+          <dd>Docker</dd>
+          <dd>Git</dd>
+          <dd>GitHub Actions</dd>
+          <dd>Meson/Ninja</dd>
+          <dd>GoReleaser</dd>
+        </div>
+        <div>
+          <dt>R1 // DATA</dt>
+          <dd>BoltDB</dd>
+          <dd>MySQL</dd>
+          <dd>PostgreSQL</dd>
+          <dd>MongoDB</dd>
+          <dd>Firebase</dd>
+        </div>
+        <div>
+          <dt>R1 // ASSURANCE</dt>
+          <dd>Unit/Integration/Fuzzing (AFL++)</dd>
+          <dd>CodeQL</dd>
+          <dd>Valgrind</dd>
+          <dd>AddressSanitizer</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="channel" id="channel-transmissions" role="tabpanel" aria-label="Transmissions" hidden>
+    <div class="spec-sheet">
+      <h2 class="spec-sheet__title overline">Chrono Audit Log</h2>
+      <ol class="log">
+        <li class="log__entry">
+          <span class="log__stamp">2022 — 2026</span>
+          <div class="log__body">
+            <h3 class="log__title">BSc (Hons) Computer Networks</h3>
+            <p class="log__org">University Education</p>
+            <p class="log__desc">Specialization in network security, distributed systems, and systems programming.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+  <section class="channel" id="channel-comm" role="tabpanel" aria-label="Comm" hidden>
+    <div class="spec-sheet">
+      <h2 class="spec-sheet__title overline">Terminal Dispatch</h2>
+      <form class="dispatch" id="dispatch-form" novalidate>
+        <label for="d-identity" class="overline">Sender Identity</label>
+        <input id="d-identity" name="identity" type="text" autocomplete="name" placeholder="name or node id">
+
+        <label for="d-priority" class="overline">Transmission Priority</label>
+        <select id="d-priority" name="priority">
+          <option value="ROUTINE // P3">ROUTINE // P3</option>
+          <option value="EVALUATION // P2">EVALUATION // P2</option>
+          <option value="URGENT // P1">URGENT // P1</option>
+        </select>
+
+        <label for="d-subject" class="overline">Header</label>
+        <input id="d-subject" name="subject" type="text" placeholder="subject">
+
+        <label for="d-payload" class="overline">Raw Payload <span id="d-count">0</span></label>
+        <textarea id="d-payload" name="payload" rows="8" placeholder="message"></textarea>
+
+        <button type="submit">Transmit</button>
+      </form>
+
+      <dl class="channels-list">
+        <div><dt class="overline">Email</dt><dd><a href="mailto:sathikahettiarachchi219@gmail.com">sathikahettiarachchi219@gmail.com</a></dd></div>
+        <div><dt class="overline">GitHub</dt><dd><a href="https://github.com/Hetti219" rel="noopener noreferrer">Hetti219</a></dd></div>
+        <div><dt class="overline">LinkedIn</dt><dd><a href="https://www.linkedin.com/in/sathika-hettiarachchi-516112303" rel="noopener noreferrer">sathika-hettiarachchi</a></dd></div>
+        <div><dt class="overline">Discord</dt><dd><a href="https://discord.com/invite/nrhgUBNd" rel="noopener noreferrer">discord.com/invite/nrhgUBNd</a></dd></div>
+      </dl>
+    </div>
+  </section>
 </main>
+
+<footer class="anchored">
+  <span class="overline">HOST</span> GitHub Pages
+  <span class="overline">MODE</span> STATIC
+  <span class="overline">STANDARDS</span> WCAG 2.2 AA · schema.org
+  <button type="button" id="llms-open">/llms.txt</button>
+  <span class="overline">LATENCY</span> <span id="latency">—</span>
+</footer>
+
+<script>
+  // §5.4 — the fragment never reaches the server, so legacy routes are remapped here.
+  (function () {
+    var map = { '#/projects': 'registry', '#/about': 'transmissions', '#/contact': 'comm' }
+    var h = location.hash
+    if (!h) return
+    var channel = map[h] || (h.indexOf('#/projects/') === 0 ? 'registry' : null)
+    if (!channel) return
+    var slug = h.indexOf('#/projects/') === 0 ? h.slice('#/projects/'.length) : ''
+    location.replace(location.pathname + '#' + channel + (slug ? '?node=' + slug : ''))
+  })()
+</script>
+
+<!-- §7.3 llms.txt drawer. Content is fetched on first open, not at load. -->
+<div class="modal" id="llms-modal" hidden>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="llms-title">
+    <header class="modal__head">
+      <span class="overline" id="llms-title">/llms.txt</span>
+      <button type="button" id="llms-copy">Copy</button>
+      <button type="button" id="llms-close">Close</button>
+    </header>
+    <pre class="modal__body" id="llms-body">Loading…</pre>
+  </div>
+</div>
 
 <script type="module" src="/app.js"></script>
 </body>
