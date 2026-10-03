@@ -270,6 +270,51 @@ if (typeof document !== 'undefined') {
     if (item) selectNode(item.dataset.node)
   })
 
+  /* §8/03 "Direct Action Group" — read the node back off the DOM, so the
+     copied text can never drift from what is on screen. */
+  function readNodeFull(el) {
+    return {
+      slug: el.dataset.slug,
+      path: el.dataset.path,
+      subsystem: el.dataset.subsystem,
+      category: el.dataset.category,
+      title: el.dataset.title,
+      tagline: el.dataset.tagline,
+      status: el.dataset.status,
+      revision: el.dataset.revision,
+      repo: el.dataset.repo,
+      live: el.dataset.live,
+      tech: (el.dataset.tech || '').split(',').filter(Boolean),
+      highlights: [...el.querySelectorAll('.node__highlights li')].map((li) => li.textContent.trim()),
+      metrics: [...el.querySelectorAll('.metrics > div')].map((d) => ({
+        key: d.querySelector('dt').textContent.trim(),
+        value: d.querySelector('dd').textContent.trim(),
+      })),
+    }
+  }
+
+  document.getElementById('registry-inspector')?.addEventListener('click', async (e) => {
+    const btn = e.target.closest('[data-action]')
+    if (!btn) return
+    const article = btn.closest('.node')
+    if (!article) return
+
+    const node = readNodeFull(article)
+    const text = btn.dataset.action === 'copy-spec' ? nodeToSpec(node) : nodeToJson(node)
+    const original = btn.textContent
+
+    try {
+      await navigator.clipboard.writeText(text)
+      btn.textContent = 'COPIED'
+    } catch {
+      // clipboard is unavailable over http:// and in some embedded browsers
+      btn.textContent = 'COPY BLOCKED'
+    }
+    setTimeout(() => {
+      btn.textContent = original
+    }, 1200)
+  })
+
   function filterIsActive() {
     const input = document.getElementById('registry-filter')
     return Boolean(input && input.value)
