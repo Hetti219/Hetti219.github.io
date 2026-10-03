@@ -367,3 +367,229 @@ test('every node exposes both copy actions', () => {
   assert.equal(copySpecs, PROJECTS.length, 'one copy-spec per project')
   assert.equal(rawJsons, PROJECTS.length, 'one raw-json per project')
 })
+
+/* ---------- Task 8: schematics and transmissions ---------- */
+
+test('every skill from the retired skills.json is present as markup', () => {
+  const html = readFileSync('index.html', 'utf8')
+  const skills = [
+    'Distributed Systems (PBFT, Gossip Protocols, Vector Clocks)',
+    'Network Security (Packet Inspection, DDoS Mitigation, netfilter/NFQUEUE)',
+    'P2P Networking (libp2p, Kademlia DHT, NAT Traversal)',
+    'Linux Internals (/proc, ipset, BPF, systemd)',
+    'Protocol Design (Protobuf, WebSocket, REST API)',
+    'Go', 'C', 'Dart', 'Python', 'JavaScript/TypeScript',
+    'Java', 'C#', 'PHP', 'Kotlin', 'C++',
+    'React', 'Flutter', 'TailwindCSS', 'Node.js', 'D3.js', 'Docker', 'Git',
+    'GitHub Actions', 'Meson/Ninja', 'GoReleaser',
+    'BoltDB', 'MySQL', 'PostgreSQL', 'MongoDB', 'Firebase',
+    'Unit/Integration/Fuzzing (AFL++)', 'CodeQL', 'Valgrind', 'AddressSanitizer',
+  ]
+  for (const s of skills) {
+    assert.ok(html.includes(s), `skill missing from HTML: ${s}`)
+  }
+})
+
+test('all six runlevels are labelled', () => {
+  const html = readFileSync('index.html', 'utf8')
+  for (const r of ['R3 // PROVEN', 'R3 // SYSTEMS', 'R2 // FAMILIAR', 'R1 // TOOLING', 'R1 // DATA', 'R1 // ASSURANCE']) {
+    assert.ok(html.includes(r), `runlevel missing: ${r}`)
+  }
+})
+
+test('the education entry is present in full', () => {
+  const html = readFileSync('index.html', 'utf8')
+  assert.ok(html.includes('2022 — 2026'))
+  assert.ok(html.includes('BSc (Hons) Computer Networks'))
+  assert.ok(html.includes('Specialization in network security, distributed systems, and systems programming.'))
+})
+
+/* ---------- Task 9: dispatch form ---------- */
+
+import { buildMailto, DISPATCH_TO } from '../app.js'
+
+test('special characters in subject and body survive encoding', () => {
+  const url = buildMailto({
+    to: 'a@b.com',
+    identity: 'n',
+    priority: 'P3',
+    subject: 'Q3 review & budget #2',
+    payload: 'Line one\nLine two',
+  })
+  const parsed = new URL(url)
+  assert.equal(parsed.searchParams.get('subject'), 'Q3 review & budget #2')
+  assert.ok(parsed.searchParams.get('body').includes('Line one\nLine two'))
+})
+
+test('non-ASCII payloads round-trip', () => {
+  const url = buildMailto({ to: 'a@b.com', identity: 'n', priority: 'P3', subject: 'ünïcode', payload: '日本語テスト' })
+  const parsed = new URL(url)
+  assert.equal(parsed.searchParams.get('subject'), 'ünïcode')
+  assert.ok(parsed.searchParams.get('body').includes('日本語テスト'))
+})
+
+test('the body carries the sender identity and priority', () => {
+  const body = new URL(
+    buildMailto({
+      to: 'a@b.com',
+      identity: 'ACME Corp',
+      priority: 'URGENT // P1',
+      subject: 's',
+      payload: 'p',
+    }),
+  ).searchParams.get('body')
+  assert.ok(body.includes('ACME Corp'))
+  assert.ok(body.includes('URGENT // P1'))
+  assert.ok(body.includes('p'))
+})
+
+test('an empty payload still produces a valid, addressable URL', () => {
+  const url = buildMailto({ to: 'a@b.com', identity: '', priority: 'ROUTINE // P3', subject: '', payload: '' })
+  assert.ok(url.startsWith('mailto:'))
+  assert.doesNotThrow(() => new URL(url))
+  assert.equal(new URL(url).searchParams.get('subject'), '(no subject)')
+})
+
+test('the default recipient is the real address, not a placeholder', () => {
+  assert.equal(DISPATCH_TO, 'sathikahettiarachchi219@gmail.com')
+  assert.ok(buildMailto({}).startsWith(`mailto:${DISPATCH_TO}?`))
+})
+
+test('the dispatch form carries every §8/04 field', () => {
+  const html = readFileSync('index.html', 'utf8')
+  for (const id of ['dispatch-form', 'd-identity', 'd-priority', 'd-subject', 'd-payload', 'd-count']) {
+    assert.match(html, new RegExp(`id="${id}"`), `missing #${id}`)
+  }
+  for (const p of ['ROUTINE // P3', 'EVALUATION // P2', 'URGENT // P1']) {
+    assert.ok(html.includes(p), `missing priority ${p}`)
+  }
+})
+
+test('all four contact channels are in the HTML as real links', () => {
+  const html = readFileSync('index.html', 'utf8')
+  for (const href of [
+    'mailto:sathikahettiarachchi219@gmail.com',
+    'https://github.com/Hetti219',
+    'https://www.linkedin.com/in/sathika-hettiarachchi-516112303',
+    'https://discord.com/invite/nrhgUBNd',
+  ]) {
+    assert.ok(html.includes(href), `missing contact link ${href}`)
+  }
+})
+
+/* ---------- Task 10: machine mode, llms.txt drawer, JSON-LD ---------- */
+
+import { toMarkdown } from '../app.js'
+
+const MODEL = {
+  identity: { name: 'Sathika Hettiarachchi', role: 'Network Engineer × Software Developer' },
+  nodes: [{
+    slug: 'dtvn', path: '/network/consensus/dtvn', title: 'DTVN', status: 'VERIFIED',
+    tagline: 'Byzantine fault-tolerant P2P ticket validation system built in Go',
+    tech: ['Go', 'libp2p'], highlights: ['PBFT 3-phase consensus with view change recovery'],
+    metrics: [{ key: 'COMMITS', value: '330+' }],
+  }],
+  runlevels: [{ level: 'R3 // PROVEN', items: ['Go', 'C'] }],
+  log: [{ stamp: '2022 — 2026', title: 'BSc (Hons) Computer Networks', org: 'University Education', desc: 'Specialization in network security.' }],
+  channels: [{ label: 'Email', value: 'a@b.com', href: 'mailto:a@b.com' }],
+}
+
+test('machine mode emits every datum a human can see', () => {
+  const md = toMarkdown(MODEL)
+  for (const needle of [
+    'Sathika Hettiarachchi', 'Network Engineer × Software Developer',
+    '/network/consensus/dtvn', 'DTVN', 'VERIFIED',
+    'Byzantine fault-tolerant P2P ticket validation system built in Go',
+    'Go, libp2p', 'PBFT 3-phase consensus with view change recovery',
+    'COMMITS: 330+',
+    'R3 // PROVEN', 'BSc (Hons) Computer Networks', 'University Education',
+    'a@b.com',
+  ]) {
+    assert.ok(md.includes(needle), `machine output missing: ${needle}`)
+  }
+})
+
+test('machine output is markdown, not HTML', () => {
+  const md = toMarkdown(MODEL)
+  assert.doesNotMatch(md, /<[a-z][^>]*>/i)
+})
+
+test('an empty inventory does not emit a dangling heading', () => {
+  const md = toMarkdown({ identity: { name: 'X', role: 'Y' }, nodes: [], runlevels: [], log: [], channels: [] })
+  assert.doesNotMatch(md, /##\s*$/)
+  assert.ok(md.includes('X'))
+})
+
+test('llms.txt lists every project path', () => {
+  const txt = readFileSync('llms.txt', 'utf8')
+  for (const p of PROJECTS) assert.ok(txt.includes(p.path), `llms.txt missing ${p.path}`)
+  for (const p of PROJECTS) assert.ok(txt.includes(p.slug), `llms.txt missing ${p.slug}`)
+})
+
+test('the JSON-LD block is valid and carries the real identity', () => {
+  const html = readFileSync('index.html', 'utf8')
+  const raw = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)
+  assert.ok(raw, 'no JSON-LD block found')
+  const data = JSON.parse(raw[1])
+  assert.equal(data['@type'], 'Person')
+  assert.equal(data.name, 'Sathika Hettiarachchi')
+  assert.doesNotMatch(raw[1], /Aether-RPC|Operator System Node|Principal Systems & Software Architect/)
+  const names = data.hasOfferCatalog.itemListElement.map((i) => i.name)
+  for (const p of PROJECTS) assert.ok(names.some((n) => n.toLowerCase().includes(p.slug.split('-')[0])), `${p.slug} not in OfferCatalog`)
+})
+
+/* ---------- Task 11: audio, footer, legacy redirect, 404, robots ---------- */
+
+test('audio is off by default and the context is created lazily', () => {
+  const js = readFileSync('app.js', 'utf8')
+  assert.match(js, /audioOn\s*=\s*false/, 'audio must default to off')
+  assert.match(js, /function ensureAudio/, 'audio context must be behind a helper')
+  const ensure = js.match(/function ensureAudio[\s\S]*?\n  \}/)
+  assert.ok(ensure, 'ensureAudio should exist')
+  assert.match(ensure[0], /if\s*\(!audioCtx\)/, 'context must be created once, on demand')
+})
+
+test('the footer carries every §4.1 marker', () => {
+  const html = readFileSync('index.html', 'utf8')
+  for (const marker of ['GitHub Pages', 'STATIC', 'WCAG', 'llms.txt', 'LATENCY']) {
+    assert.ok(html.includes(marker), `footer missing: ${marker}`)
+  }
+  assert.match(html, /id="llms-open"/)
+})
+
+test('the legacy hash redirect maps old routes', () => {
+  const html = readFileSync('index.html', 'utf8')
+  assert.match(html, /location\.hash/)
+  for (const legacy of ['#/projects', '#/about', '#/contact']) {
+    assert.ok(html.includes(legacy), `legacy route missing: ${legacy}`)
+  }
+})
+
+test('404 and robots exist and robots permits crawling', () => {
+  assert.ok(readFileSync('robots.txt', 'utf8').includes('User-agent: *'))
+  assert.ok(readFileSync('404.html', 'utf8').includes('404'))
+})
+
+/* ---------- Task 12: budget, no-images, no-JS rendering ---------- */
+
+import { gzipSync } from 'node:zlib'
+
+test('the shipped bundle is under the 45KB gzipped budget (§9)', () => {
+  const total = ['index.html', 'styles.css', 'app.js']
+    .map((f) => gzipSync(readFileSync(f)).length)
+    .reduce((a, b) => a + b, 0)
+  assert.ok(total < 45 * 1024, `bundle is ${(total / 1024).toFixed(1)}KB gzipped`)
+})
+
+test('no images ship (§9)', () => {
+  const html = readFileSync('index.html', 'utf8')
+  assert.doesNotMatch(html, /<img\b/i)
+})
+
+test('the page works without app.js', () => {
+  const html = readFileSync('index.html', 'utf8')
+  for (const p of PROJECTS) assert.ok(html.includes(p.slug), `${p.slug} must be in raw HTML`)
+  assert.ok(html.includes('Distributed Systems (PBFT, Gossip Protocols, Vector Clocks)'))
+  assert.ok(html.includes('BSc (Hons) Computer Networks'))
+  assert.ok(html.includes('sathikahettiarachchi219@gmail.com'))
+})
