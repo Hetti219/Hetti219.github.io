@@ -100,10 +100,156 @@ export function nodeToJson(n) {
   return JSON.stringify(n, null, 2)
 }
 
+/** §8/04 — the dispatch destination. Not a placeholder: this is the real inbox. */
+export const DISPATCH_TO = 'sathikahettiarachchi219@gmail.com'
+
+/**
+ * §8/04 — compose a `mailto:` message from the dispatch form.
+ *
+ * `URLSearchParams` does the encoding. A hand-built query string truncates at
+ * the first `&` in the subject — "Q3 review & budget" would arrive as
+ * "Q3 review " and silently lose the rest.
+ */
+export function buildMailto({
+  to = DISPATCH_TO,
+  identity = '',
+  priority = 'ROUTINE // P3',
+  subject = '',
+  payload = '',
+} = {}) {
+  const body = [`SENDER:   ${identity || '—'}`, `PRIORITY: ${priority}`, '', payload].join('\n')
+  const params = new URLSearchParams({ subject: subject || '(no subject)', body })
+  return `mailto:${to}?${params}`
+}
+
+/**
+ * §7.1 "Dual-Optic Symmetry" — the machine rendering of the page.
+ *
+ * The model is read back off the DOM (`readModel`), not from a second
+ * hand-authored copy, so this output cannot drift from what a human sees.
+ */
+export function toMarkdown(model) {
+  const out = []
+  const { identity = {}, nodes = [], runlevels = [], log = [], channels = [] } = model ?? {}
+
+  out.push(`# ${identity.name ?? ''}`.trim())
+  if (identity.role) out.push('', identity.role)
+
+  if (nodes.length) {
+    out.push('', '## Project Inventory', '')
+    for (const n of nodes) {
+      out.push(`### ${n.title}`, '')
+      out.push(`- path: \`${n.path}\``)
+      out.push(`- status: ${n.status}`)
+      for (const [k, v] of [['revision', n.revision], ['repo', n.repo], ['live', n.live]]) {
+        if (v) out.push(`- ${k}: ${v}`)
+      }
+      out.push(`- stack: ${(n.tech ?? []).join(', ')}`)
+      if (n.tagline) out.push('', n.tagline)
+      if (n.highlights?.length) {
+        out.push('')
+        for (const h of n.highlights) out.push(`- ${h}`)
+      }
+      if (n.metrics?.length) {
+        out.push('')
+        for (const m of n.metrics) out.push(`- ${m.key}: ${m.value}`)
+      }
+      out.push('')
+    }
+  }
+
+  if (runlevels.length) {
+    out.push('## Runlevels', '')
+    for (const r of runlevels) out.push(`- **${r.level}** — ${r.items.join(', ')}`)
+    out.push('')
+  }
+
+  if (log.length) {
+    out.push('## Log', '')
+    for (const e of log) {
+      out.push(`- **${e.stamp}** ${e.title}${e.org ? ` — ${e.org}` : ''}`)
+      if (e.desc) out.push(`  ${e.desc}`)
+    }
+    out.push('')
+  }
+
+  if (channels.length) {
+    out.push('## Channels', '')
+    for (const c of channels) out.push(`- ${c.label}: ${c.value}`)
+    out.push('')
+  }
+
+  return out.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n'
+}
+
 /* ------------------------------- browser only ---------------------------- */
 
 if (typeof document !== 'undefined') {
   const $ = (id) => document.getElementById(id)
+
+  /** §5.2 — discrete 1Hz escapement. One tick per second, no sweeping. */
+  /* ------------------------ §5.3 acoustic feedback ----------------------- */
+
+  // Off by default, and the AudioContext is never constructed until a user
+  // gesture asks for it — an autoplaying context is both a browser warning
+  // and a hostile first impression.
+  let audioOn = false
+  let audioCtx = null
+
+  function ensureAudio() {
+    if (!audioCtx) {
+      const Ctx = window.AudioContext || window.webkitAudioContext
+      if (!Ctx) return null
+      audioCtx = new Ctx()
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume()
+    return audioCtx
+  }
+
+  /* §5.3 microswitch: sine 1200Hz → 120Hz over 7ms, high-pass 800Hz, gain 0.04 */
+  function blip() {
+    if (!audioOn) return
+    const ctx = ensureAudio()
+    if (!ctx) return
+    const t = ctx.currentTime
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    const hp = ctx.createBiquadFilter()
+    hp.type = 'highpass'
+    hp.frequency.value = 800
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(1200, t)
+    osc.frequency.exponentialRampToValueAtTime(120, t + 0.007)
+    gain.gain.setValueAtTime(0.04, t)
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.007)
+    osc.connect(hp).connect(gain).connect(ctx.destination)
+    osc.start(t)
+    osc.stop(t + 0.008)
+  }
+
+  /* §5.3 chronometer tick: 1800Hz, 4ms, gain 0.015 */
+  function tickSound() {
+    if (!audioOn) return
+    const ctx = ensureAudio()
+    if (!ctx) return
+    const t = ctx.currentTime
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(1800, t)
+    gain.gain.setValueAtTime(0.015, t)
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.004)
+    osc.connect(gain).connect(ctx.destination)
+    osc.start(t)
+    osc.stop(t + 0.005)
+  }
+
+  document.getElementById('audio-toggle')?.addEventListener('click', (e) => {
+    audioOn = !audioOn
+    e.currentTarget.setAttribute('aria-pressed', String(audioOn))
+    e.currentTarget.textContent = audioOn ? 'AUDIO ON' : 'AUDIO OFF'
+    if (audioOn) blip()
+  })
 
   /** §5.2 — discrete 1Hz escapement. One tick per second, no sweeping. */
   function tick() {
@@ -122,6 +268,7 @@ if (typeof document !== 'undefined') {
         led.style.opacity = '1'
       }, 120)
     }
+    tickSound()
   }
 
   function resize() {
@@ -185,13 +332,111 @@ if (typeof document !== 'undefined') {
     if (tab) setChannel(tab.dataset.channel)
   })
 
-  /* Forward declarations. Task 10 REPLACES these three bodies in place —
-     appending a second declaration would compile and silently shadow. */
-  function isModalOpen() {
-    return false
+  /* --------------------- §7.1 dual-optic machine mode -------------------- */
+
+  /**
+   * The machine model is read off the live DOM. Authored twice it would
+   * drift; read once it cannot.
+   */
+  function readModel() {
+    const name = document.querySelector('.doctrine__name')?.textContent.trim() ?? ''
+    const role = document.querySelector('.doctrine__role')?.textContent.trim() ?? ''
+    return {
+      identity: { name, role },
+      nodes: [...document.querySelectorAll('.node')].map(readNodeFull),
+      runlevels: [...document.querySelectorAll('.runlevels > div')].map((d) => ({
+        level: d.querySelector('dt').textContent.trim(),
+        items: [...d.querySelectorAll('dd')].map((x) => x.textContent.trim()),
+      })),
+      log: [...document.querySelectorAll('.log__entry')].map((l) => ({
+        stamp: l.querySelector('.log__stamp').textContent.trim(),
+        title: l.querySelector('.log__title').textContent.trim(),
+        org: l.querySelector('.log__org')?.textContent.trim() ?? '',
+        desc: l.querySelector('.log__desc')?.textContent.trim() ?? '',
+      })),
+      channels: [...document.querySelectorAll('.channels-list > div')].map((c) => ({
+        label: c.querySelector('dt').textContent.trim(),
+        value: c.querySelector('dd').textContent.trim(),
+        href: c.querySelector('a')?.getAttribute('href') ?? '',
+      })),
+    }
   }
-  function closeModal() {}
-  function toggleOptic() {}
+
+  let machine = false
+
+  /** §7.3 — OPTIC toggle. One keystroke from the rendered page to plain text. */
+  function toggleOptic() {
+    machine = !machine
+    document.documentElement.classList.toggle('optic-machine', machine)
+    const btn = document.getElementById('optic-toggle')
+    if (btn) {
+      btn.textContent = machine ? 'OPTIC: MACHINE' : 'OPTIC: GUI'
+      btn.setAttribute('aria-pressed', String(machine))
+    }
+    let pane = document.getElementById('machine-pane')
+    if (machine) {
+      if (!pane) {
+        pane = document.createElement('pre')
+        pane.id = 'machine-pane'
+        pane.className = 'machine'
+        document.getElementById('viewport-root').append(pane)
+      }
+      pane.textContent = toMarkdown(readModel())
+    } else if (pane) {
+      pane.remove()
+    }
+  }
+
+  document.getElementById('optic-toggle')?.addEventListener('click', () => {
+    blip()
+    toggleOptic()
+  })
+
+  /* ------------------------ §7.3 llms.txt drawer ------------------------- */
+
+  function isModalOpen() {
+    const m = document.getElementById('llms-modal')
+    return Boolean(m && !m.hidden)
+  }
+
+  function closeModal() {
+    const m = document.getElementById('llms-modal')
+    if (m) m.hidden = true
+  }
+
+  document.getElementById('llms-open')?.addEventListener('click', async () => {
+    const modal = document.getElementById('llms-modal')
+    const body = document.getElementById('llms-body')
+    if (!modal || !body) return
+    if (body.dataset.loaded !== 'yes') {
+      try {
+        const res = await fetch('/llms.txt')
+        body.textContent = await res.text()
+        body.dataset.loaded = 'yes'
+      } catch {
+        // offline, file://, or the fetch was blocked — the modal still opens
+        body.textContent = 'llms.txt unavailable offline.'
+      }
+    }
+    modal.hidden = false
+    document.getElementById('llms-close')?.focus()
+  })
+
+  document.getElementById('llms-close')?.addEventListener('click', closeModal)
+
+  document.getElementById('llms-copy')?.addEventListener('click', async (e) => {
+    const btn = e.currentTarget
+    const original = btn.textContent
+    try {
+      await navigator.clipboard.writeText(document.getElementById('llms-body').textContent)
+      btn.textContent = 'COPIED'
+    } catch {
+      btn.textContent = 'COPY BLOCKED'
+    }
+    setTimeout(() => {
+      btn.textContent = original
+    }, 1200)
+  })
 
   /* ------------------------- §6.1 registry filtering -------------------- */
 
@@ -315,6 +560,29 @@ if (typeof document !== 'undefined') {
     }, 1200)
   })
 
+  /* -------------------- §8/04 terminal dispatch form --------------------- */
+
+  const payloadField = $('d-payload')
+  const countField = $('d-count')
+  if (payloadField && countField) {
+    const updateCount = () => {
+      countField.textContent = String(payloadField.value.length)
+    }
+    payloadField.addEventListener('input', updateCount)
+    updateCount()
+  }
+
+  $('dispatch-form')?.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const form = e.currentTarget
+    location.href = buildMailto({
+      identity: form.identity.value,
+      priority: form.priority.value,
+      subject: form.subject.value,
+      payload: form.payload.value,
+    })
+  })
+
   function filterIsActive() {
     const input = document.getElementById('registry-filter')
     return Boolean(input && input.value)
@@ -366,4 +634,15 @@ if (typeof document !== 'undefined') {
 
   setChannel(CHANNELS.includes(INITIAL_CHANNEL) ? INITIAL_CHANNEL : 'registry')
   applyFilter()
+
+  /* ------------------------- §4.1 anchored footer ------------------------ */
+
+  const navEntry = performance.getEntriesByType?.('navigation')?.[0]
+  const latency = $('latency')
+  if (latency && navEntry) latency.textContent = `${Math.round(navEntry.duration)}ms`
+
+  // §6.1 deep link. Reads INITIAL_HASH, not location.hash — setChannel has
+  // already rewritten the latter to the bare channel name.
+  const deepNode = new URLSearchParams(INITIAL_HASH.split('?')[1] ?? '').get('node')
+  if (deepNode) selectNode(deepNode)
 }
