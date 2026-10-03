@@ -546,3 +546,301 @@ html:not(.js) .explorer__tree {
 html:not(.js) .node {
   border-top: 1px solid var(--color-border-mist);
 }
+
+/* ==========================================================================
+   §6.2 / §6.3 Spec sheets — runlevels and the chrono audit log
+   ========================================================================== */
+
+.spec-sheet {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px 16px;
+}
+
+.spec-sheet__title {
+  margin: 0 0 16px;
+}
+
+.runlevels {
+  margin: 0;
+  border-top: 1px solid var(--color-border-mist);
+}
+
+.runlevels > div {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 0 20px;
+  border-bottom: 1px solid var(--color-border-mist);
+  padding: 13px 0;
+}
+
+@media (max-width: 640px) {
+  .runlevels > div {
+    grid-template-columns: 1fr;
+  }
+}
+
+.runlevels dt {
+  color: var(--color-cobalt-pulse);
+  font-size: var(--fs-timestamp);
+  letter-spacing: 0.08em;
+}
+
+.runlevels dd {
+  margin: 0 0 5px;
+  color: var(--color-text-bone);
+}
+
+.runlevels dd:last-child {
+  margin-bottom: 0;
+}
+
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-mist);
+}
+
+.log__entry {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 0 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border-mist);
+}
+
+@media (max-width: 640px) {
+  .log__entry {
+    grid-template-columns: 1fr;
+  }
+}
+
+.log__stamp {
+  color: var(--color-cobalt-pulse);
+  font-size: var(--fs-timestamp);
+}
+
+.log__title {
+  font-family: var(--font-grotesk);
+  font-size: var(--fs-section);
+  font-weight: 700;
+  margin: 0;
+}
+
+.log__org {
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+}
+
+.log__desc {
+  margin: 8px 0 0;
+  max-width: 78ch;
+}
+
+/* ==========================================================================
+   §8/04 Terminal dispatch form
+   ========================================================================== */
+
+.dispatch {
+  display: grid;
+  gap: 5px;
+  max-width: 74ch;
+}
+
+.dispatch label {
+  margin-top: 12px;
+}
+
+.dispatch input,
+.dispatch select,
+.dispatch textarea {
+  font: inherit;
+  color: var(--color-text-bone);
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border-mist);
+  padding: 7px 9px;
+  width: 100%;
+}
+
+/* §8/04 validation state — high-contrast cobalt focus, no outline. */
+.dispatch input:focus,
+.dispatch select:focus,
+.dispatch textarea:focus {
+  border-color: #3B82F6;
+  outline: none;
+}
+
+.dispatch textarea {
+  resize: vertical;
+}
+
+#d-count {
+  color: var(--color-cobalt-pulse);
+}
+
+.dispatch button {
+  font: inherit;
+  margin-top: 16px;
+  justify-self: start;
+  color: var(--color-bg-base);
+  background: var(--color-cobalt-pulse);
+  border: 1px solid var(--color-cobalt-pulse);
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background-color var(--dur-vault) var(--ease-vault);
+}
+
+.dispatch button:hover {
+  background: var(--color-cobalt-glow);
+}
+
+.channels-list {
+  margin: 30px 0 0;
+  border-top: 1px solid var(--color-border-mist);
+  max-width: 74ch;
+}
+
+.channels-list > div {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-border-mist);
+}
+
+.channels-list dt,
+.channels-list dd {
+  margin: 0;
+}
+
+.channels-list a {
+  color: var(--color-text-bone);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border-hard);
+  overflow-wrap: anywhere;
+}
+
+.channels-list a:hover {
+  color: var(--color-cobalt-pulse);
+  border-bottom-color: var(--color-cobalt-pulse);
+}
+
+/* ==========================================================================
+   §7.1 Dual-optic symmetry — MACHINE rendering.
+   Chrome and panels are hidden; only the model survives.
+   ========================================================================== */
+
+html.optic-machine .chrono,
+html.optic-machine .channels,
+html.optic-machine .channel {
+  display: none;
+}
+
+.machine {
+  margin: 0;
+  padding: 22px 16px;
+  max-width: 100ch;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  color: var(--color-text-bone);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+html:not(.optic-machine) .machine {
+  display: none;
+}
+
+/* ==========================================================================
+   §7.3 llms.txt drawer
+   ========================================================================== */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(7, 9, 14, 0.86);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal__panel {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-hard);
+  width: min(880px, 100%);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border-mist);
+}
+
+.modal__head .overline {
+  flex: 1;
+}
+
+.modal__head button {
+  font: inherit;
+  font-size: var(--fs-timestamp);
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-mist);
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.modal__head button:hover {
+  color: var(--color-text-bone);
+  border-color: var(--color-cobalt-pulse);
+}
+
+.modal__body {
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  white-space: pre-wrap;
+  color: var(--color-text-bone);
+}
+
+/* ==========================================================================
+   §4.1 Anchored footer
+   ========================================================================== */
+
+.anchored {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 12px 16px;
+  margin-top: 30px;
+  border-top: 1px solid var(--color-border-mist);
+  font-size: var(--fs-timestamp);
+  color: var(--color-text-muted);
+}
+
+.anchored button {
+  font: inherit;
+  font-size: var(--fs-timestamp);
+  background: transparent;
+  color: var(--color-cobalt-pulse);
+  border: 1px solid var(--color-border-mist);
+  padding: 3px 9px;
+  cursor: pointer;
+}
+
+.anchored button:hover {
+  border-color: var(--color-cobalt-pulse);
+}
