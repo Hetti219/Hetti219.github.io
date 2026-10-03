@@ -406,7 +406,7 @@ test('the education entry is present in full', () => {
 
 /* ---------- Task 9: dispatch form ---------- */
 
-import { buildMailto, DISPATCH_TO, formatLatency } from '../app.js'
+import { buildMailto, DISPATCH_TO, formatLatency, shortcutsActive, resolveNodeSlug } from '../app.js'
 
 test('special characters in subject and body survive encoding', () => {
   const url = buildMailto({
@@ -665,5 +665,91 @@ test('the focus ring clears the 3:1 non-text threshold against every surface it 
   for (const bg of ['#07090E', '#0D1117', '#131924']) {
     const r = contrast('#2563EB', bg)
     assert.ok(r >= 3, `focus ring on ${bg}: ${r.toFixed(2)}:1 is below the 3:1 non-text floor`)
+  }
+})
+
+/* ================= Final review fix pass ================= */
+
+test('without JS the page is navigable, not merely readable', () => {
+  // The rewrite's promise is a complete document without scripting. Channels
+  // 02-04 are `hidden` in the markup, so with JS off their content — skills,
+  // experience, contact — was unreachable behind inert tabs.
+  assert.match(css(), /html:not\(\.js\)[^{]*\[hidden\][^{]*\{[^}]*display:\s*block/,
+    'the no-JS rule must reveal the hidden channel sections')
+  assert.match(css(), /html:not\(\.js\)\s+\.channels\s*\{[^}]*display:\s*none/,
+    'the tab bar does nothing without JS and must not invite a dead click')
+
+  const html = readFileSync('index.html', 'utf8')
+  const form = html.match(/<form[^>]*id="dispatch-form"[^>]*>/)
+  assert.ok(form, 'dispatch form missing')
+  assert.match(form[0], /action="mailto:/, 'without JS the form must still reach a mail client')
+  assert.match(form[0], /method="post"/)
+  assert.match(form[0], /enctype="text\/plain"/)
+})
+
+test('the single-key shortcuts can be turned off (WCAG 2.1.4)', () => {
+  // Single-character shortcuts must offer turn-off, remap or focus-scoping.
+  // The design mandates single strokes, so the site ships a turn-off.
+  assert.equal(shortcutsActive({ shortcutsOn: true, target: { tagName: 'BODY' } }), true)
+  assert.equal(shortcutsActive({ shortcutsOn: false, target: { tagName: 'BODY' } }), false)
+  assert.equal(shortcutsActive({ shortcutsOn: true, target: { tagName: 'INPUT' } }), false)
+  assert.equal(shortcutsActive({ shortcutsOn: false, target: { tagName: 'INPUT' } }), false)
+  assert.equal(shortcutsActive({ shortcutsOn: true, target: { isContentEditable: true } }), false)
+
+  const html = readFileSync('index.html', 'utf8')
+  assert.match(html, /<button[^>]*id="keys-toggle"[^>]*aria-pressed="false"/,
+    'the shortcut off switch must exist and start enabled')
+  assert.match(html, /id="keys-toggle"[^>]*>\s*KEYS ON/, 'and must say what it does')
+})
+
+test('a deep link to an unknown node does not blank the inspector', () => {
+  const known = ['dtvn', 'maskbook']
+  assert.equal(resolveNodeSlug('dtvn', known), 'dtvn')
+  assert.equal(resolveNodeSlug('nope', known), null)
+  assert.equal(resolveNodeSlug(undefined, known), null)
+  assert.equal(resolveNodeSlug('', known), null)
+  assert.equal(resolveNodeSlug('dtvn', []), null)
+})
+
+test('the llms.txt trigger is announced as a dialog opener', () => {
+  const html = readFileSync('index.html', 'utf8')
+  const btn = html.match(/<button[^>]*id="llms-open"[^>]*>/)
+  assert.ok(btn, '#llms-open missing')
+  assert.match(btn[0], /aria-haspopup="dialog"/)
+  assert.match(btn[0], /aria-expanded="false"/)
+  assert.match(html, /<div class="modal" id="llms-modal"[^>]*hidden/)
+})
+
+test('machine mode emits the project prose and the schema block the GUI shows', () => {
+  const md = toMarkdown({
+    identity: { name: 'X', role: 'Y' },
+    nodes: [{
+      ...MODEL.nodes[0],
+      desc: 'Event ticketing has a double-spend problem.',
+      schema: 'node:      dtvn\nfault:     tolerates f < n/3 Byzantine',
+    }],
+    runlevels: [], log: [], channels: [],
+  })
+  assert.ok(md.includes('Event ticketing has a double-spend problem.'), 'prose missing from machine output')
+  assert.ok(md.includes('tolerates f < n/3 Byzantine'), 'schema extras missing from machine output')
+})
+
+test('the js class is set before first paint, not by the deferred module', () => {
+  // Otherwise a cold cache paints the all-articles no-JS layout and then
+  // collapses it, which is a large layout shift on a site built to avoid one.
+  const html = readFileSync('index.html', 'utf8')
+  assert.match(html, /<script>document\.documentElement\.classList\.add\('js'\)<\/script>/,
+    'the js class must be set by an inline head script')
+  assert.doesNotMatch(readFileSync('app.js', 'utf8'), /classList\.add\('js'\)/,
+    'and app.js must not set it a second time')
+})
+
+test('every element app.js looks up by id exists in the shipped markup', () => {
+  const js = readFileSync('app.js', 'utf8')
+  const markup = readFileSync('index.html', 'utf8') + readFileSync('404.html', 'utf8')
+  const ids = new Set([...js.matchAll(/\$\(['"]([a-zA-Z0-9-]+)['"]\)/g)].map((m) => m[1]))
+  assert.ok(ids.size >= 10, `expected the id lookups, found ${ids.size}`)
+  for (const id of ids) {
+    assert.ok(markup.includes(`id="${id}"`), `app.js looks up #${id}, which no shipped page defines`)
   }
 })
