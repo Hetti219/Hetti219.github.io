@@ -406,7 +406,7 @@ test('the education entry is present in full', () => {
 
 /* ---------- Task 9: dispatch form ---------- */
 
-import { buildMailto, DISPATCH_TO } from '../app.js'
+import { buildMailto, DISPATCH_TO, formatLatency } from '../app.js'
 
 test('special characters in subject and body survive encoding', () => {
   const url = buildMailto({
@@ -592,4 +592,78 @@ test('the page works without app.js', () => {
   assert.ok(html.includes('Distributed Systems (PBFT, Gossip Protocols, Vector Clocks)'))
   assert.ok(html.includes('BSc (Hons) Computer Networks'))
   assert.ok(html.includes('sathikahettiarachchi219@gmail.com'))
+})
+
+test('an unmeasurable latency renders as an em dash, never a false 0ms', () => {
+  // Sample the load time with performance.now() inside the load listener:
+  // the navigation entry's own `duration` reads 0 until loadEventEnd is
+  // written, so an entry-based read reports a confident, false 0ms.
+  assert.equal(formatLatency(0), '—')
+  assert.equal(formatLatency(undefined), '—')
+  assert.equal(formatLatency(NaN), '—')
+  assert.equal(formatLatency(12.6), '13ms')
+  assert.equal(formatLatency(240), '240ms')
+  assert.equal(formatLatency(0.4), '—', 'sub-millisecond rounds to 0, which would read as a false zero')
+})
+
+test('the no-JS contract hides every inert control, not just the explorer', () => {
+  // Without JS the copy buttons do nothing when clicked. The plan's own rule
+  // for the filter and tree is "hide what does nothing"; a dead button that
+  // looks live is the same defect, so it gets the same rule.
+  const sheet = css()
+  const rule = sheet.match(/html:not\(\.js\)[^{]*\{[^}]*\}/g) || []
+  const hidden = rule.join('\n')
+  for (const sel of ['.filter', '.tree', '[data-action]']) {
+    assert.ok(hidden.includes(sel), `no-JS contract does not hide ${sel}`)
+  }
+})
+
+/* ---------- WCAG 2.2 AA contrast: the footer claims it, so it is checked ---------- */
+
+function ch(hex) {
+  return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
+}
+function luminance(hex) {
+  const [r, g, b] = ch(hex).map((v) => {
+    const s = v / 255
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+function contrast(a, b) {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+test('every effective text/background pair clears WCAG 2.2 AA at small-text contrast', () => {
+  // Effective pairs, hover and selected states included — a per-rule scan
+  // cannot see these, because a hover block often declares only one side of
+  // the pair and inherits the other from the cascade.
+  const pairs = [
+    ['body / base', '#E2E5EC', '#07090E'],
+    ['muted / base', '#8490A6', '#07090E'],
+    ['muted / surface', '#8490A6', '#0D1117'],
+    ['muted / elevated', '#8490A6', '#131924'],
+    ['cobalt-pulse / base', '#3B82F6', '#07090E'],
+    ['bone / selected tab', '#E2E5EC', '#101A2E'],
+    ['dispatch submit label / cobalt-pulse', '#07090E', '#3B82F6'],
+    // The hover state is background: transparent, so the page ground shows
+    // through beneath cobalt-pulse text. Asserted below, not assumed.
+    ['dispatch submit label on hover', '#3B82F6', '#07090E'],
+    ['selection text', '#FFFFFF', '#2563EB'],
+  ]
+  assert.match(css(), /\.dispatch button:hover\s*\{[^}]*background:\s*transparent/,
+    'the hover pair below is only true while the hover state stays transparent')
+
+  for (const [name, fg, bg] of pairs) {
+    const r = contrast(fg, bg)
+    assert.ok(r >= 4.5, `${name}: ${r.toFixed(2)}:1 is below the 4.5:1 AA floor for small text`)
+  }
+})
+
+test('the focus ring clears the 3:1 non-text threshold against every surface it sits on', () => {
+  for (const bg of ['#07090E', '#0D1117', '#131924']) {
+    const r = contrast('#2563EB', bg)
+    assert.ok(r >= 3, `focus ring on ${bg}: ${r.toFixed(2)}:1 is below the 3:1 non-text floor`)
+  }
 })
