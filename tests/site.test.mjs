@@ -255,3 +255,115 @@ test('the registry filter affordances exist', () => {
     assert.match(html, new RegExp(`data-tag="${tag}"`), `missing tag ${tag}`)
   }
 })
+
+/* ---------- Task 6: registry filter ---------- */
+
+import { nodeMatchesQuery } from '../app.js'
+
+const NODE = {
+  path: '/network/consensus/dtvn',
+  title: 'DTVN — Distributed Ticket Validation Network',
+  tech: ['Go', 'libp2p', 'PBFT'],
+  subsystem: 'network',
+}
+
+test('an empty or whitespace query matches everything', () => {
+  assert.equal(nodeMatchesQuery(NODE, ''), true)
+  assert.equal(nodeMatchesQuery(NODE, '   '), true)
+  assert.equal(nodeMatchesQuery(NODE, '\t\n'), true)
+  assert.equal(nodeMatchesQuery(NODE, undefined), true)
+  assert.equal(nodeMatchesQuery(NODE, null), true)
+})
+
+test('regex metacharacters are matched literally and never throw', () => {
+  for (const q of ['(', ')', '[', ']', '*', '+', '?', '\\', '^', '$', '.', '|', '{', '}']) {
+    assert.doesNotThrow(() => nodeMatchesQuery(NODE, q), `query ${JSON.stringify(q)} threw`)
+  }
+  assert.equal(nodeMatchesQuery(NODE, '('), false)
+  assert.equal(nodeMatchesQuery(NODE, ')'), false)
+  assert.equal(nodeMatchesQuery(NODE, 'dtvn'), true)
+})
+
+test('matching is case-insensitive across path, title and tech', () => {
+  assert.equal(nodeMatchesQuery(NODE, 'DTVN'), true)
+  assert.equal(nodeMatchesQuery(NODE, 'dtvn'), true)
+  assert.equal(nodeMatchesQuery(NODE, 'libp2p'), true)
+  assert.equal(nodeMatchesQuery(NODE, 'LibP2P'), true)
+  assert.equal(nodeMatchesQuery(NODE, '/network/'), true)
+  assert.equal(nodeMatchesQuery(NODE, 'consensus'), true)
+  assert.equal(nodeMatchesQuery(NODE, 'maskbook'), false)
+})
+
+test('a tag filters by subsystem, and an empty tag does not filter', () => {
+  assert.equal(nodeMatchesQuery(NODE, '', 'network'), true)
+  assert.equal(nodeMatchesQuery(NODE, '', 'security'), false)
+  assert.equal(nodeMatchesQuery(NODE, '', ''), true)
+  assert.equal(nodeMatchesQuery(NODE, 'dtvn', 'security'), false, 'tag wins over query')
+})
+
+test('the no-JS path leaves all four articles visible and stacked', () => {
+  const s = css()
+  assert.match(s, /html:not\(\.js\)/, 'filter/tree must collapse without JS')
+  assert.doesNotMatch(s, /^\.node\s*\{[^}]*display:\s*none/m, 'articles must not be hidden by default')
+})
+
+/* ---------- Task 7: inspector actions ---------- */
+
+import { nodeToSpec, nodeToJson } from '../app.js'
+
+const FIXTURE = {
+  slug: 'dtvn',
+  path: '/network/consensus/dtvn',
+  subsystem: 'network',
+  category: 'consensus',
+  title: 'DTVN — Distributed Ticket Validation Network',
+  tagline: 'Byzantine fault-tolerant P2P ticket validation system built in Go',
+  status: 'VERIFIED',
+  revision: '',
+  repo: 'https://github.com/Hetti219/DTVN',
+  live: '',
+  tech: ['Go', 'libp2p'],
+  highlights: ['PBFT 3-phase consensus with view change recovery'],
+  metrics: [
+    { key: 'COMMITS', value: '330+' },
+    { key: 'LINES', value: '—' },
+  ],
+}
+
+test('the spec block carries every field a human can see', () => {
+  const spec = nodeToSpec(FIXTURE)
+  for (const needle of [
+    'DTVN',
+    '/network/consensus/dtvn',
+    'network / consensus',
+    'Go, libp2p',
+    'VERIFIED',
+    'COMMITS',
+    '330+',
+    'PBFT 3-phase',
+    'https://github.com/Hetti219/DTVN',
+  ]) {
+    assert.ok(spec.includes(needle), `spec missing: ${needle}`)
+  }
+})
+
+test('the spec renders unset revision and live link as an em dash, never "undefined"', () => {
+  const spec = nodeToSpec(FIXTURE)
+  assert.ok(spec.includes('revision:  —'), 'revision should render as an em dash')
+  assert.doesNotMatch(spec, /undefined|null|NaN/)
+})
+
+test('raw JSON round-trips and preserves em dashes', () => {
+  const parsed = JSON.parse(nodeToJson(FIXTURE))
+  assert.equal(parsed.slug, 'dtvn')
+  assert.equal(parsed.metrics[1].value, '—')
+  assert.deepEqual(parsed.tech, ['Go', 'libp2p'])
+})
+
+test('every node exposes both copy actions', () => {
+  const html = readFileSync('index.html', 'utf8')
+  const copySpecs = [...html.matchAll(/data-action="copy-spec"/g)].length
+  const rawJsons = [...html.matchAll(/data-action="raw-json"/g)].length
+  assert.equal(copySpecs, PROJECTS.length, 'one copy-spec per project')
+  assert.equal(rawJsons, PROJECTS.length, 'one raw-json per project')
+})
