@@ -522,3 +522,27 @@ a {
   color: var(--color-text-bone);
   border-color: var(--color-cobalt-pulse);
 }
+
+/* --------------------------------------------------------------------------
+   Progressive enhancement contract.
+   Without JS the filter and tree are inert controls that do nothing when
+   clicked. Hide them and let all four project articles stack as plain,
+   readable, crawlable content. With JS, the split explorer takes over.
+   -------------------------------------------------------------------------- */
+
+html:not(.js) .filter,
+html:not(.js) .tree {
+  display: none;
+}
+
+html:not(.js) .explorer {
+  grid-template-columns: 1fr;
+}
+
+html:not(.js) .explorer__tree {
+  border-right: 0;
+}
+
+html:not(.js) .node {
+  border-top: 1px solid var(--color-border-mist);
+}
