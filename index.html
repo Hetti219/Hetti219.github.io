@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap">
 <link rel="stylesheet" href="/styles.css">
+<script>document.documentElement.classList.add('js')</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -50,6 +51,7 @@
   <span class="chrono__seg chrono__seg--end">
     <button type="button" id="audio-toggle" class="toggle" aria-pressed="false">AUDIO OFF</button>
     <button type="button" id="optic-toggle" class="toggle" aria-pressed="false">OPTIC: GUI</button>
+    <button type="button" id="keys-toggle" class="toggle" aria-pressed="false">KEYS ON</button>
   </span>
 </header>
 
@@ -349,7 +351,7 @@ deploy:    live at mask-book.atwebpages.com</code></pre>
   <section class="channel" id="channel-comm" role="tabpanel" aria-label="Comm" hidden>
     <div class="spec-sheet">
       <h2 class="spec-sheet__title overline">Terminal Dispatch</h2>
-      <form class="dispatch" id="dispatch-form" novalidate>
+      <form class="dispatch" id="dispatch-form" action="mailto:sathikahettiarachchi219@gmail.com" method="post" enctype="text/plain">
         <label for="d-identity" class="overline">Sender Identity</label>
         <input id="d-identity" name="identity" type="text" autocomplete="name" placeholder="name or node id">
 
@@ -383,7 +385,7 @@ deploy:    live at mask-book.atwebpages.com</code></pre>
   <span class="overline">HOST</span> GitHub Pages
   <span class="overline">MODE</span> STATIC
   <span class="overline">STANDARDS</span> WCAG 2.2 AA · schema.org
-  <button type="button" id="llms-open">/llms.txt</button>
+  <button type="button" id="llms-open" aria-haspopup="dialog" aria-expanded="false">/llms.txt</button>
   <span class="overline">LATENCY</span> <span id="latency">—</span>
 </footer>
 

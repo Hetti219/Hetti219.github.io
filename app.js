@@ -38,6 +38,25 @@ export function shouldIgnoreKey(target) {
 }
 
 /**
+ * WCAG 2.1.4 asks single-character shortcuts to offer one of turn-off,
+ * remap, or focus-scoping. §6.2 mandates the single stroke, so the site
+ * ships the turn-off; this is the gate that switch drives.
+ */
+export function shortcutsActive({ shortcutsOn, target }) {
+  return Boolean(shortcutsOn) && !shouldIgnoreKey(target)
+}
+
+/**
+ * A `?node=` deep link is user input and may name a project that no longer
+ * exists. Returning null lets the caller keep the default selection instead
+ * of hiding every article and leaving an empty inspector with no way back.
+ */
+export function resolveNodeSlug(slug, known) {
+  if (!slug || !Array.isArray(known)) return null
+  return known.includes(slug) ? slug : null
+}
+
+/**
  * §6.2 — Escape resolves to exactly one step of the cascade:
  * dismiss modal → blur input → clear filters. Never two in one press.
  */
@@ -159,6 +178,8 @@ export function toMarkdown(model) {
       }
       out.push(`- stack: ${(n.tech ?? []).join(', ')}`)
       if (n.tagline) out.push('', n.tagline)
+      if (n.desc) out.push('', n.desc)
+      if (n.schema) out.push('', '```', n.schema, '```')
       if (n.highlights?.length) {
         out.push('')
         for (const h of n.highlights) out.push(`- ${h}`)
@@ -315,7 +336,7 @@ if (typeof document !== 'undefined') {
 
   /* ------------------------- §6.2 channel dispatch ----------------------- */
 
-  document.documentElement.classList.add('js')
+  // `js` is set by an inline head script, before first paint — see index.html.
 
   const CHANNELS = ['registry', 'schematics', 'transmissions', 'comm']
 
@@ -405,6 +426,17 @@ if (typeof document !== 'undefined') {
     toggleOptic()
   })
 
+  /* §6.2 single-key dispatch is a WCAG 2.1.4 character-key shortcut, so it
+     ships with the turn-off that criterion asks for. Escape is not a
+     character key and stays live either way. */
+  let shortcutsOn = true
+
+  document.getElementById('keys-toggle')?.addEventListener('click', (e) => {
+    shortcutsOn = !shortcutsOn
+    e.currentTarget.setAttribute('aria-pressed', String(!shortcutsOn))
+    e.currentTarget.textContent = shortcutsOn ? 'KEYS ON' : 'KEYS OFF'
+  })
+
   /* ------------------------ §7.3 llms.txt drawer ------------------------- */
 
   function isModalOpen() {
@@ -412,15 +444,48 @@ if (typeof document !== 'undefined') {
     return Boolean(m && !m.hidden)
   }
 
+  // Focus is restored to the control that opened the dialog, and Tab is kept
+  // inside it: a focus ring that walks into the obscured page fails SC 2.4.11.
+  let modalReturnFocus = null
+
   function closeModal() {
     const m = document.getElementById('llms-modal')
-    if (m) m.hidden = true
+    if (!m || m.hidden) return
+    m.hidden = true
+    document.getElementById('llms-open')?.setAttribute('aria-expanded', 'false')
+    if (modalReturnFocus) modalReturnFocus.focus()
+    modalReturnFocus = null
   }
 
-  document.getElementById('llms-open')?.addEventListener('click', async () => {
+  function trapModalTab(e) {
+    const m = document.getElementById('llms-modal')
+    if (!m || m.hidden) return
+    const stops = [...m.querySelectorAll('button, [href], input, select, textarea')].filter(
+      (el) => !el.disabled && el.offsetParent !== null,
+    )
+    if (!stops.length) return
+    const first = stops[0]
+    const last = stops[stops.length - 1]
+    const active = document.activeElement
+    if (e.shiftKey && (active === first || !m.contains(active))) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault()
+      first.focus()
+    }
+  }
+
+  document.getElementById('llms-open')?.addEventListener('click', async (e) => {
     const modal = document.getElementById('llms-modal')
     const body = document.getElementById('llms-body')
     if (!modal || !body) return
+    modalReturnFocus = e.currentTarget
+    // Open first, load after: the drawer used to stay shut for the length of
+    // the fetch, which reads as a dead click on a slow connection.
+    modal.hidden = false
+    e.currentTarget.setAttribute('aria-expanded', 'true')
+    document.getElementById('llms-close')?.focus()
     if (body.dataset.loaded !== 'yes') {
       try {
         const res = await fetch('/llms.txt')
@@ -431,11 +496,14 @@ if (typeof document !== 'undefined') {
         body.textContent = 'llms.txt unavailable offline.'
       }
     }
-    modal.hidden = false
-    document.getElementById('llms-close')?.focus()
   })
 
   document.getElementById('llms-close')?.addEventListener('click', closeModal)
+
+  // Clicking the scrim closes, the way every dialog a person has ever used does.
+  document.getElementById('llms-modal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'llms-modal') closeModal()
+  })
 
   document.getElementById('llms-copy')?.addEventListener('click', async (e) => {
     const btn = e.currentTarget
@@ -543,6 +611,10 @@ if (typeof document !== 'undefined') {
       repo: el.dataset.repo,
       live: el.dataset.live,
       tech: (el.dataset.tech || '').split(',').filter(Boolean),
+      // The prose and the schema box are the two most LLM-legible things on
+      // the node. Omit them and llms.txt's "every page datum" is false.
+      desc: el.querySelector('.node__desc')?.textContent.trim() ?? '',
+      schema: el.querySelector('.schema')?.textContent.trim() ?? '',
       highlights: [...el.querySelectorAll('.node__highlights li')].map((li) => li.textContent.trim()),
       metrics: [...el.querySelectorAll('.metrics > div')].map((d) => ({
         key: d.querySelector('dt').textContent.trim(),
@@ -602,6 +674,11 @@ if (typeof document !== 'undefined') {
   }
 
   addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      trapModalTab(e)
+      return
+    }
+
     if (e.metaKey || e.ctrlKey || e.altKey) return
 
     if (shouldIgnoreKey(e.target)) {
@@ -630,6 +707,9 @@ if (typeof document !== 'undefined') {
       return
     }
 
+    // Past here every branch is a single-character shortcut.
+    if (!shortcutsActive({ shortcutsOn, target: e.target })) return
+
     if (e.key === '/') {
       e.preventDefault()
       document.getElementById('registry-filter')?.focus()
@@ -657,6 +737,9 @@ if (typeof document !== 'undefined') {
 
   // §6.1 deep link. Reads INITIAL_HASH, not location.hash — setChannel has
   // already rewritten the latter to the bare channel name.
-  const deepNode = new URLSearchParams(INITIAL_HASH.split('?')[1] ?? '').get('node')
+  const deepNode = resolveNodeSlug(
+    new URLSearchParams(INITIAL_HASH.split('?')[1] ?? '').get('node'),
+    [...document.querySelectorAll('.node')].map((n) => n.dataset.slug),
+  )
   if (deepNode) selectNode(deepNode)
 }

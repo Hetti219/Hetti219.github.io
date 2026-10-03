@@ -525,14 +525,26 @@ a {
 
 /* --------------------------------------------------------------------------
    Progressive enhancement contract.
-   Without JS the filter and tree are inert controls that do nothing when
-   clicked. Hide them and let all four project articles stack as plain,
-   readable, crawlable content. With JS, the split explorer takes over.
+   Without JS the filter, tree, telemetry toggles and copy actions are inert
+   controls that do nothing when clicked: hide them. The channel tabs are
+   inert too, so every channel is un-hidden and stacked in document order,
+   and all four project articles read as plain crawlable content. With JS,
+   the vault doors and the split explorer take over.
    -------------------------------------------------------------------------- */
 
 html:not(.js) .filter,
 html:not(.js) .tree,
-html:not(.js) [data-action] {
+html:not(.js) [data-action],
+html:not(.js) .toggle,
+html:not(.js) #llms-open {
+  display: none;
+}
+
+html:not(.js) .channel[hidden] {
+  display: block;
+}
+
+html:not(.js) .channels {
   display: none;
 }
 
