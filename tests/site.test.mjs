@@ -578,8 +578,8 @@ test('the single-key shortcuts can be turned off (WCAG 2.1.4)', () => {
   assert.equal(shortcutsActive({ shortcutsOn: false, target: { tagName: 'INPUT' } }), false)
   assert.equal(shortcutsActive({ shortcutsOn: true, target: { isContentEditable: true } }), false)
 
-  assert.match(html, /<button[^>]*id="keys-toggle"[^>]*aria-pressed="false"/,
-    'the shortcut off switch must exist and start enabled')
+  assert.match(html, /<button[^>]*id="keys-toggle"[^>]*aria-pressed="true"/,
+    'the shortcut off switch must exist and start pressed (shortcuts live)')
   assert.match(html, /id="keys-toggle"[^>]*>\s*KEYS ON/, 'and must say what it does')
 })
 
@@ -612,6 +612,17 @@ test('machine mode emits the project prose and the schema block the GUI shows', 
   })
   assert.ok(md.includes('Event ticketing has a double-spend problem.'), 'prose missing from machine output')
   assert.ok(md.includes('tolerates f < n/3 Byzantine'), 'schema extras missing from machine output')
+})
+
+test('machine mode does not hide the control that leaves it', () => {
+  // The OPTIC toggle lives in the chrono bar. Hiding the whole bar with
+  // `html.optic-machine .chrono` stranded the visitor in machine mode, with
+  // an undiscoverable `m` keypress or a reload as the only way back — and `m`
+  // is itself disabled when KEYS is off. Only the readouts may be hidden.
+  assert.doesNotMatch(CSS, /html\.optic-machine \.chrono[\s,{]/,
+    'the chrono bar carries the optic toggle and must survive machine mode')
+  assert.match(CSS, /html\.optic-machine \.chrono__seg:not\(\.chrono__seg--end\)/,
+    'the telemetry readouts should still be hidden')
 })
 
 test('the js class is set before first paint, not by the deferred module', () => {
