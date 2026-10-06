@@ -377,7 +377,7 @@ if (typeof document !== 'undefined') {
     const role = document.querySelector('.doctrine__role')?.textContent.trim() ?? ''
     return {
       identity: { name, role },
-      nodes: [...document.querySelectorAll('.node')].map(readNodeFull),
+      nodes: [...document.querySelectorAll('.node')].map(readNode),
       runlevels: [...document.querySelectorAll('.runlevels > div')].map((d) => ({
         level: d.querySelector('dt').textContent.trim(),
         items: [...d.querySelectorAll('dd')].map((x) => x.textContent.trim()),
@@ -391,7 +391,6 @@ if (typeof document !== 'undefined') {
       channels: [...document.querySelectorAll('.channels-list > div')].map((c) => ({
         label: c.querySelector('dt').textContent.trim(),
         value: c.querySelector('dd').textContent.trim(),
-        href: c.querySelector('a')?.getAttribute('href') ?? '',
       })),
     }
   }
@@ -521,16 +520,6 @@ if (typeof document !== 'undefined') {
 
   /* ------------------------- §6.1 registry filtering -------------------- */
 
-  function readNode(el) {
-    return {
-      slug: el.dataset.slug,
-      path: el.dataset.path,
-      title: el.dataset.title,
-      subsystem: el.dataset.subsystem,
-      tech: (el.dataset.tech || '').split(',').filter(Boolean),
-    }
-  }
-
   let activeTag = ''
   let selectedSlug = null
 
@@ -597,16 +586,18 @@ if (typeof document !== 'undefined') {
   })
 
   /* §8/03 "Direct Action Group" — read the node back off the DOM, so the
-     copied text can never drift from what is on screen. */
-  function readNodeFull(el) {
+     copied text can never drift from what is on screen: title, tagline and
+     status come off the elements that render them, not a second copy in a
+     data- attribute. Only the routing metadata has no visible counterpart. */
+  function readNode(el) {
     return {
       slug: el.dataset.slug,
       path: el.dataset.path,
       subsystem: el.dataset.subsystem,
       category: el.dataset.category,
-      title: el.dataset.title,
-      tagline: el.dataset.tagline,
-      status: el.dataset.status,
+      title: el.querySelector('.node__title')?.textContent.trim() ?? '',
+      tagline: el.querySelector('.node__tagline')?.textContent.trim() ?? '',
+      status: el.querySelector('.tag--status')?.textContent.trim() ?? '',
       revision: el.dataset.revision,
       repo: el.dataset.repo,
       live: el.dataset.live,
@@ -629,7 +620,7 @@ if (typeof document !== 'undefined') {
     const article = btn.closest('.node')
     if (!article) return
 
-    const node = readNodeFull(article)
+    const node = readNode(article)
     const text = btn.dataset.action === 'copy-spec' ? nodeToSpec(node) : nodeToJson(node)
     const original = btn.textContent
 
