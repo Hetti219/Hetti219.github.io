@@ -240,7 +240,11 @@ if (typeof document !== 'undefined') {
     return audioCtx
   }
 
-  /* §5.3 microswitch: sine 1200Hz → 120Hz over 7ms, high-pass 800Hz, gain 0.04 */
+  /* §5.3 microswitch: sine 1200Hz → 120Hz, high-pass 800Hz.
+     The spec's 7ms at gain 0.04 is inaudible in practice: the sweep drops
+     below the 800Hz filter corner within ~1ms, so the only sound left is a
+     near-silent sliver. Duration and gain are stretched so the impulse spends
+     real time in the passband. These two numbers are the ear-tuning knobs. */
   function blip() {
     if (!audioOn) return
     const ctx = ensureAudio()
@@ -253,15 +257,17 @@ if (typeof document !== 'undefined') {
     hp.frequency.value = 800
     osc.type = 'sine'
     osc.frequency.setValueAtTime(1200, t)
-    osc.frequency.exponentialRampToValueAtTime(120, t + 0.007)
-    gain.gain.setValueAtTime(0.04, t)
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.007)
+    osc.frequency.exponentialRampToValueAtTime(120, t + 0.02)
+    gain.gain.setValueAtTime(0.25, t)
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.02)
     osc.connect(hp).connect(gain).connect(ctx.destination)
     osc.start(t)
-    osc.stop(t + 0.008)
+    osc.stop(t + 0.021)
   }
 
-  /* §5.3 chronometer tick: 1800Hz, 4ms, gain 0.015 */
+  /* §5.3 chronometer tick: 1800Hz. Spec's 4ms at gain 0.015 was likewise
+     below the threshold of hearing on laptop speakers. No high-pass here, so
+     only the gain and duration needed moving. */
   function tickSound() {
     if (!audioOn) return
     const ctx = ensureAudio()
@@ -271,11 +277,11 @@ if (typeof document !== 'undefined') {
     const gain = ctx.createGain()
     osc.type = 'sine'
     osc.frequency.setValueAtTime(1800, t)
-    gain.gain.setValueAtTime(0.015, t)
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.004)
+    gain.gain.setValueAtTime(0.07, t)
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.012)
     osc.connect(gain).connect(ctx.destination)
     osc.start(t)
-    osc.stop(t + 0.005)
+    osc.stop(t + 0.013)
   }
 
   document.getElementById('audio-toggle')?.addEventListener('click', (e) => {
@@ -430,9 +436,11 @@ if (typeof document !== 'undefined') {
      character key and stays live either way. */
   let shortcutsOn = true
 
+  // aria-pressed tracks the feature, not its absence — same as the audio and
+  // optic toggles. Inverted, a screen reader announces "KEYS ON, not pressed".
   document.getElementById('keys-toggle')?.addEventListener('click', (e) => {
     shortcutsOn = !shortcutsOn
-    e.currentTarget.setAttribute('aria-pressed', String(!shortcutsOn))
+    e.currentTarget.setAttribute('aria-pressed', String(shortcutsOn))
     e.currentTarget.textContent = shortcutsOn ? 'KEYS ON' : 'KEYS OFF'
   })
 
