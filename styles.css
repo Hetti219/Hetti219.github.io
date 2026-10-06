@@ -745,12 +745,14 @@ html:not(.js) .node {
 
 /* ==========================================================================
    §7.1 Dual-optic symmetry — MACHINE rendering.
-   Chrome and panels are hidden; only the model survives.
+   Chrome and panels are hidden; only the model survives — plus the toggle
+   that leaves. The OPTIC button lives in the chrono bar, so hiding the bar
+   wholesale strands the visitor in machine mode with no way back.
    ========================================================================== */
 
-html.optic-machine .chrono,
 html.optic-machine .channels,
-html.optic-machine .channel {
+html.optic-machine .channel,
+html.optic-machine .chrono__seg:not(.chrono__seg--end) {
   display: none;
 }
 
