@@ -4,12 +4,20 @@ Static portfolio. No build step, no dependencies.
 
 ## Editing
 
-Content lives in `index.html`. To add a project, copy an `<article class="node">`
-block, fill in its `data-*` attributes, and add a matching `<li>` to `#registry-tree`.
+Content lives in `index.html` and nowhere else. Adding a project means five edits:
 
-The `data-*` attributes are not decoration — the filter, the copy actions and the
-machine rendering all read the node back off the DOM, so a field missing from the
-markup is a field missing from every one of them.
+1. an `<article class="node">` block — title, tagline, description, highlights,
+   metrics, schema box
+2. a matching `<li>` in `#registry-tree`
+3. an entry in the JSON-LD `hasOfferCatalog`
+4. `llms.txt`, which is hand-maintained
+5. nothing else — the tests fail if 1–4 disagree
+
+The `data-*` attributes are not decoration. `readNode` in `app.js` reads the node
+back off the DOM — title, tagline and status off the elements that render them,
+the rest off their attributes — so the filter, the copy actions and the machine
+rendering cannot drift from what is on screen, and a field missing from the markup
+is a field missing from all of them.
 
 ## Verifying
 
