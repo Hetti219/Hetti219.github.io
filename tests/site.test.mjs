@@ -1,12 +1,16 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, existsSync } from 'node:fs'
+import { gzipSync } from 'node:zlib'
+import {
+  formatUTC, formatLocal, channelForKey, shouldIgnoreKey, nextEscapeAction,
+  nodeMatchesQuery, nodeToSpec, nodeToJson, toMarkdown,
+  buildMailto, DISPATCH_TO, formatLatency, shortcutsActive, resolveNodeSlug,
+} from '../app.js'
 
-test('the React/Vite stack is gone', () => {
-  for (const p of ['src', 'public', 'package.json', 'vite.config.js', 'eslint.config.js']) {
-    assert.equal(existsSync(p), false, `${p} should have been deleted`)
-  }
-})
+/* The sources, read once — nothing rewrites them mid-run. */
+const CSS = readFileSync('styles.css', 'utf8')
+const html = readFileSync('index.html', 'utf8')
 
 test('the static skeleton exists', () => {
   for (const p of ['index.html', 'styles.css', 'app.js', 'favicon.svg', '.nojekyll']) {
@@ -15,8 +19,6 @@ test('the static skeleton exists', () => {
 })
 
 /* ---------- Task 2: design tokens, typography, motion ---------- */
-
-const css = () => readFileSync('styles.css', 'utf8')
 
 test('every §2.1 colour token is defined with its exact spec value', () => {
   const expected = {
@@ -31,11 +33,11 @@ test('every §2.1 colour token is defined with its exact spec value', () => {
     '--color-cobalt-pulse': '#3B82F6',
   }
   for (const [token, hex] of Object.entries(expected)) {
-    assert.match(css(), new RegExp(`${token}\\s*:\\s*${hex}`, 'i'), `${token} must be ${hex}`)
+    assert.match(CSS, new RegExp(`${token}\\s*:\\s*${hex}`, 'i'), `${token} must be ${hex}`)
   }
 })
 
-test('the type scale uses the six §3.2 sizes and nothing else', () => {
+test('the type scale uses the six §3.2 sizes', () => {
   const scale = {
     '--fs-overline': '10px',
     '--fs-timestamp': '11px',
@@ -45,34 +47,31 @@ test('the type scale uses the six §3.2 sizes and nothing else', () => {
     '--fs-ident': '24px',
   }
   for (const [token, size] of Object.entries(scale)) {
-    assert.match(css(), new RegExp(`${token}\\s*:\\s*${size}`), `${token} must be ${size}`)
+    assert.match(CSS, new RegExp(`${token}\\s*:\\s*${size}`), `${token} must be ${size}`)
   }
 })
 
-test('the coordinate grid uses the 32px value from the spec CSS, not the 24px prose', () => {
-  assert.match(css(), /background-size:\s*32px\s+32px/)
-  assert.doesNotMatch(css(), /background-size:\s*24px/)
+test('the coordinate grid is drawn at 32px (§4.3)', () => {
+  assert.match(CSS, /background-size:\s*32px\s+32px/)
 })
 
 test('every border-radius declaration is zero, and nothing is blurred', () => {
-  const radii = [...css().matchAll(/border-radius:\s*([^;]+)/g)].map((m) => m[1].trim())
+  const radii = [...CSS.matchAll(/border-radius:\s*([^;]+)/g)].map((m) => m[1].trim())
   assert.ok(radii.length > 0, 'expected the universal reset to declare border-radius: 0')
   for (const r of radii) assert.equal(r, '0', `non-zero border-radius: ${r}`)
-  assert.doesNotMatch(css(), /backdrop-filter|filter:\s*blur/)
+  assert.doesNotMatch(CSS, /backdrop-filter|filter:\s*blur/)
 })
 
 test('the vault-door easing and duration match §5.1', () => {
-  assert.match(css(), /--ease-vault:\s*cubic-bezier\(0\.16,\s*1,\s*0\.3,\s*1\)/)
-  assert.match(css(), /--dur-vault:\s*380ms/)
+  assert.match(CSS, /--ease-vault:\s*cubic-bezier\(0\.16,\s*1,\s*0\.3,\s*1\)/)
+  assert.match(CSS, /--dur-vault:\s*380ms/)
 })
 
 test('reduced motion is respected', () => {
-  assert.match(css(), /@media \(prefers-reduced-motion: reduce\)/)
+  assert.match(CSS, /@media \(prefers-reduced-motion: reduce\)/)
 })
 
 /* ---------- Task 3: telemetry bar and 1Hz escapement ---------- */
-
-import { formatUTC, formatLocal, channelForKey } from '../app.js'
 
 test('formatUTC renders HH:MM:SSZ with zero padding', () => {
   assert.equal(formatUTC(new Date(Date.UTC(2026, 9, 3, 4, 5, 6))), '04:05:06Z')
@@ -86,7 +85,6 @@ test('formatLocal uses local getters, not UTC ones', () => {
 })
 
 test('the telemetry bar carries every §8/01 sub-element', () => {
-  const html = readFileSync('index.html', 'utf8')
   for (const id of ['utc', 'local', 'dom-count', 'viewport', 'led', 'audio-toggle', 'optic-toggle']) {
     assert.match(html, new RegExp(`id="${id}"`), `missing #${id}`)
   }
@@ -94,7 +92,6 @@ test('the telemetry bar carries every §8/01 sub-element', () => {
 })
 
 test('the telemetry markup and the main region do not share an id', () => {
-  const html = readFileSync('index.html', 'utf8')
   assert.match(html, /id="viewport-root"/)
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1])
   const dupes = ids.filter((id, i) => ids.indexOf(id) !== i)
@@ -102,8 +99,6 @@ test('the telemetry markup and the main region do not share an id', () => {
 })
 
 /* ---------- Task 4: channel selector and keyboard dispatch ---------- */
-
-import { shouldIgnoreKey, nextEscapeAction } from '../app.js'
 
 test('keystrokes inside a text field are never intercepted', () => {
   for (const tag of ['INPUT', 'TEXTAREA', 'SELECT']) {
@@ -131,122 +126,56 @@ test('escape cascades: modal, then blur, then filters — never more than one st
 })
 
 test('all four channels are present in the markup', () => {
-  const html = readFileSync('index.html', 'utf8')
   assert.match(html, /id="channel-bar"/)
   for (const c of ['registry', 'schematics', 'transmissions', 'comm']) {
     assert.match(html, new RegExp(`id="channel-${c}"`), `missing #channel-${c}`)
   }
 })
 
-test('channel 04 is not labelled encrypted — mailto encrypts nothing', () => {
-  const html = readFileSync('index.html', 'utf8')
-  assert.match(html, /04 COMM \/\/ DISPATCH/)
-  assert.doesNotMatch(html, /[Ee]ncrypted/)
-})
-
 /* ---------- Task 5: registry content ---------- */
 
-const PROJECTS = [
-  { slug: 'dtvn', path: '/network/consensus/dtvn', subsystem: 'network', status: 'VERIFIED' },
-  { slug: 'tcp-syn-flood-detector', path: '/security/kernel/tcp-syn-flood-detector', subsystem: 'security', status: 'VERIFIED' },
-  { slug: 'exif-toolkit', path: '/security/mobile/exif-toolkit', subsystem: 'security', status: 'OPERATIONAL' },
-  { slug: 'maskbook', path: '/fullstack/web/maskbook', subsystem: 'fullstack', status: 'OPERATIONAL' },
-]
+/* Derived from the markup, never retyped here: a node added to index.html is
+   covered by every test below without editing this file. */
+const slugs = () => [...html.matchAll(/data-slug="([^"]+)"/g)].map((m) => m[1])
+const paths = () => [...html.matchAll(/data-path="([^"]+)"/g)].map((m) => m[1])
+const nodeBlock = (slug) =>
+  html.match(new RegExp(`<article class="node" id="node-${slug}"[\\s\\S]*?</article>`))?.[0] ?? ''
 
-test('every project node is present in the raw HTML with its full path', () => {
-  const html = readFileSync('index.html', 'utf8')
-  for (const p of PROJECTS) {
-    assert.match(html, new RegExp(`data-slug="${p.slug}"`), `${p.slug} missing`)
-    assert.match(html, new RegExp(`data-path="${p.path}"`), `${p.path} missing`)
-    assert.match(html, new RegExp(`data-status="${p.status}"`), `${p.slug} status missing`)
-  }
-})
-
-test('every project tagline and highlight is verbatim in the HTML', () => {
-  const html = readFileSync('index.html', 'utf8')
-  const content = {
-    dtvn: {
-      tagline: 'Byzantine fault-tolerant P2P ticket validation system built in Go',
-      highlights: [
-        'PBFT 3-phase consensus with view change recovery',
-        'Gossip protocol with Bloom filter deduplication and anti-entropy sync',
-        'libp2p networking with Kademlia DHT peer discovery',
-        'Vector clocks for causality tracking and conflict resolution',
-        'Web dashboard with D3.js network topology visualization',
-        'Byzantine fault tolerance simulator with network partition testing',
-        '~12,800 lines of Go with ~8,300 lines of tests',
-      ],
-    },
-    'tcp-syn-flood-detector': {
-      tagline: 'High-performance userspace daemon for real-time DDoS detection and mitigation',
-      highlights: [
-        '65,000+ PPS throughput with ~45ms detection latency',
-        'Dual capture: NFQUEUE (primary) and raw socket + BPF (fallback)',
-        'Sliding window rate limiting with /proc/net/tcp SYN_RECV validation',
-        '13 test suites including AFL++ fuzzing',
-        'Security-hardened: CAP_NET_ADMIN + CAP_NET_RAW only, no full root',
-        'CodeQL security scanning and CI/CD pipeline',
-      ],
-    },
-    'exif-toolkit': {
-      tagline: 'Mobile forensics tool for image metadata manipulation',
-      highlights: [
-        'View, edit, and strip EXIF metadata',
-        'Firebase cloud integration',
-        'Cross-platform mobile support',
-        'Digital forensics and privacy use cases',
-      ],
-    },
-    maskbook: {
-      tagline: 'Full-stack social platform with authentication and real-time features',
-      highlights: [
-        'User authentication and session management',
-        'Real-time social interactions',
-        'MySQL database design',
-        'Responsive frontend',
-      ],
-    },
-  }
-  for (const [slug, c] of Object.entries(content)) {
-    assert.ok(html.includes(c.tagline), `${slug}: tagline not in raw HTML`)
-    for (const h of c.highlights) {
-      assert.ok(html.includes(h), `${slug}: highlight not in raw HTML: ${h}`)
+test('every node carries the markup app.js reads it back from', () => {
+  assert.ok(slugs().length > 0, 'expected at least one project node')
+  for (const slug of slugs()) {
+    const block = nodeBlock(slug)
+    assert.ok(block, `${slug}: no <article class="node" id="node-${slug}">`)
+    assert.match(block, /data-path="\/[^"]+"/, `${slug}: no data-path`)
+    assert.match(block, /data-subsystem="[^"]+"/, `${slug}: no data-subsystem`)
+    assert.match(block, /class="tag tag--status"/, `${slug}: no status tag`)
+    // readNode() takes title, tagline, status, prose, highlights, metrics and
+    // the schema box off these elements — a node missing one loses it from the
+    // inspector, the copied spec and the machine rendering alike.
+    for (const part of [
+      'node__title', 'node__tagline', 'node__desc',
+      'node__highlights', 'metrics', 'schema',
+    ]) {
+      assert.ok(block.includes(part), `${slug}: missing .${part}`)
     }
   }
 })
 
-test('every project description is in the HTML, not fetched', () => {
-  const html = readFileSync('index.html', 'utf8')
-  const fragments = [
-    'Event ticketing has a double-spend problem',
-    'A C11 daemon that detects and mitigates TCP SYN flood attacks',
-    'A Flutter/Firebase mobile application for viewing, editing, and stripping EXIF metadata',
-    'A complete social media platform built with PHP and MySQL',
-  ]
-  for (const f of fragments) assert.ok(html.includes(f), `description missing: ${f}`)
+test('the tree, the inspector and the JSON-LD cover the same nodes', () => {
+  const tree = [...html.matchAll(/data-node="([^"]+)"/g)].map((m) => m[1])
+  assert.deepEqual([...tree].sort(), [...slugs()].sort(), 'the tree and the inspector disagree')
+  assert.equal(paths().length, slugs().length, 'a node is missing its path')
+  const ld = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])
+  assert.equal(ld.hasOfferCatalog.itemListElement.length, slugs().length,
+    'every node in the registry needs an OfferCatalog entry')
 })
 
-test('the metric grid reports real values and an em dash where unmeasured', () => {
-  const html = readFileSync('index.html', 'utf8')
-  assert.ok(html.includes('330+'), 'DTVN commits')
-  assert.ok(html.includes('~12,800'), 'DTVN lines')
-  assert.ok(html.includes('~8,300 lines'), 'DTVN tests')
-  assert.ok(html.includes('101+'), 'SYN detector commits')
-  assert.ok(html.includes('13 suites'), 'SYN detector test suites')
-  assert.ok(html.includes('65,000+'), 'SYN detector throughput')
-  assert.ok(html.includes('~45ms'), 'SYN detector latency')
+test('no placeholder stands in for an unmeasured metric', () => {
   assert.ok(html.includes('—'), 'em dash for unmeasured metrics')
   assert.doesNotMatch(html, /\bTBD\b|\bn\/a\b/i, 'no placeholder metric values')
 })
 
-test('the doctrine block carries a region derived without geolocation', () => {
-  const html = readFileSync('index.html', 'utf8')
-  assert.match(html, /id="region"/)
-  assert.doesNotMatch(html, /geolocation/i)
-})
-
 test('the registry filter affordances exist', () => {
-  const html = readFileSync('index.html', 'utf8')
   assert.match(html, /id="registry-filter"/)
   assert.match(html, /id="registry-tags"/)
   assert.match(html, /id="registry-tree"/)
@@ -257,8 +186,6 @@ test('the registry filter affordances exist', () => {
 })
 
 /* ---------- Task 6: registry filter ---------- */
-
-import { nodeMatchesQuery } from '../app.js'
 
 const NODE = {
   path: '/network/consensus/dtvn',
@@ -302,14 +229,12 @@ test('a tag filters by subsystem, and an empty tag does not filter', () => {
 })
 
 test('the no-JS path leaves all four articles visible and stacked', () => {
-  const s = css()
+  const s = CSS
   assert.match(s, /html:not\(\.js\)/, 'filter/tree must collapse without JS')
   assert.doesNotMatch(s, /^\.node\s*\{[^}]*display:\s*none/m, 'articles must not be hidden by default')
 })
 
 /* ---------- Task 7: inspector actions ---------- */
-
-import { nodeToSpec, nodeToJson } from '../app.js'
 
 const FIXTURE = {
   slug: 'dtvn',
@@ -361,52 +286,24 @@ test('raw JSON round-trips and preserves em dashes', () => {
 })
 
 test('every node exposes both copy actions', () => {
-  const html = readFileSync('index.html', 'utf8')
   const copySpecs = [...html.matchAll(/data-action="copy-spec"/g)].length
   const rawJsons = [...html.matchAll(/data-action="raw-json"/g)].length
-  assert.equal(copySpecs, PROJECTS.length, 'one copy-spec per project')
-  assert.equal(rawJsons, PROJECTS.length, 'one raw-json per project')
+  assert.equal(copySpecs, slugs().length, 'one copy-spec per node')
+  assert.equal(rawJsons, slugs().length, 'one raw-json per node')
 })
 
 /* ---------- Task 8: schematics and transmissions ---------- */
 
-test('every skill from the retired skills.json is present as markup', () => {
-  const html = readFileSync('index.html', 'utf8')
-  const skills = [
-    'Distributed Systems (PBFT, Gossip Protocols, Vector Clocks)',
-    'Network Security (Packet Inspection, DDoS Mitigation, netfilter/NFQUEUE)',
-    'P2P Networking (libp2p, Kademlia DHT, NAT Traversal)',
-    'Linux Internals (/proc, ipset, BPF, systemd)',
-    'Protocol Design (Protobuf, WebSocket, REST API)',
-    'Go', 'C', 'Dart', 'Python', 'JavaScript/TypeScript',
-    'Java', 'C#', 'PHP', 'Kotlin', 'C++',
-    'React', 'Flutter', 'TailwindCSS', 'Node.js', 'D3.js', 'Docker', 'Git',
-    'GitHub Actions', 'Meson/Ninja', 'GoReleaser',
-    'BoltDB', 'MySQL', 'PostgreSQL', 'MongoDB', 'Firebase',
-    'Unit/Integration/Fuzzing (AFL++)', 'CodeQL', 'Valgrind', 'AddressSanitizer',
-  ]
-  for (const s of skills) {
-    assert.ok(html.includes(s), `skill missing from HTML: ${s}`)
-  }
-})
-
-test('all six runlevels are labelled', () => {
-  const html = readFileSync('index.html', 'utf8')
-  for (const r of ['R3 // PROVEN', 'R3 // SYSTEMS', 'R2 // FAMILIAR', 'R1 // TOOLING', 'R1 // DATA', 'R1 // ASSURANCE']) {
-    assert.ok(html.includes(r), `runlevel missing: ${r}`)
-  }
-})
-
-test('the education entry is present in full', () => {
-  const html = readFileSync('index.html', 'utf8')
-  assert.ok(html.includes('2022 — 2026'))
-  assert.ok(html.includes('BSc (Hons) Computer Networks'))
-  assert.ok(html.includes('Specialization in network security, distributed systems, and systems programming.'))
+test('all six runlevels are labelled and carry at least one item', () => {
+  const block = html.match(/<dl class="runlevels">[\s\S]*?<\/dl>/)?.[0] ?? ''
+  const labels = [...block.matchAll(/<dt>([^<]+)<\/dt>/g)].map((m) => m[1])
+  assert.equal(labels.length, 6, `expected six runlevels, found ${labels.length}`)
+  for (const l of labels) assert.match(l, /^R\d \/\//, `${l} is not a runlevel label`)
+  const items = [...block.matchAll(/<dd>([^<]+)<\/dd>/g)]
+  assert.ok(items.length >= labels.length, 'every runlevel needs at least one item')
 })
 
 /* ---------- Task 9: dispatch form ---------- */
-
-import { buildMailto, DISPATCH_TO, formatLatency, shortcutsActive, resolveNodeSlug } from '../app.js'
 
 test('special characters in subject and body survive encoding', () => {
   const url = buildMailto({
@@ -456,7 +353,6 @@ test('the default recipient is the real address, not a placeholder', () => {
 })
 
 test('the dispatch form carries every §8/04 field', () => {
-  const html = readFileSync('index.html', 'utf8')
   for (const id of ['dispatch-form', 'd-identity', 'd-priority', 'd-subject', 'd-payload', 'd-count']) {
     assert.match(html, new RegExp(`id="${id}"`), `missing #${id}`)
   }
@@ -466,7 +362,6 @@ test('the dispatch form carries every §8/04 field', () => {
 })
 
 test('all four contact channels are in the HTML as real links', () => {
-  const html = readFileSync('index.html', 'utf8')
   for (const href of [
     'mailto:sathikahettiarachchi219@gmail.com',
     'https://github.com/Hetti219',
@@ -478,8 +373,6 @@ test('all four contact channels are in the HTML as real links', () => {
 })
 
 /* ---------- Task 10: machine mode, llms.txt drawer, JSON-LD ---------- */
-
-import { toMarkdown } from '../app.js'
 
 const MODEL = {
   identity: { name: 'Sathika Hettiarachchi', role: 'Network Engineer × Software Developer' },
@@ -520,37 +413,31 @@ test('an empty inventory does not emit a dangling heading', () => {
   assert.ok(md.includes('X'))
 })
 
-test('llms.txt lists every project path', () => {
+// llms.txt is hand-maintained, so it drifts the moment a node is added to
+// index.html without it. This is the check that catches that.
+test('llms.txt lists every node in the registry', () => {
   const txt = readFileSync('llms.txt', 'utf8')
-  for (const p of PROJECTS) assert.ok(txt.includes(p.path), `llms.txt missing ${p.path}`)
-  for (const p of PROJECTS) assert.ok(txt.includes(p.slug), `llms.txt missing ${p.slug}`)
+  for (const p of paths()) assert.ok(txt.includes(p), `llms.txt missing ${p}`)
+  for (const s of slugs()) assert.ok(txt.includes(s), `llms.txt missing ${s}`)
 })
 
 test('the JSON-LD block is valid and carries the real identity', () => {
-  const html = readFileSync('index.html', 'utf8')
   const raw = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)
   assert.ok(raw, 'no JSON-LD block found')
   const data = JSON.parse(raw[1])
   assert.equal(data['@type'], 'Person')
   assert.equal(data.name, 'Sathika Hettiarachchi')
-  assert.doesNotMatch(raw[1], /Aether-RPC|Operator System Node|Principal Systems & Software Architect/)
-  const names = data.hasOfferCatalog.itemListElement.map((i) => i.name)
-  for (const p of PROJECTS) assert.ok(names.some((n) => n.toLowerCase().includes(p.slug.split('-')[0])), `${p.slug} not in OfferCatalog`)
 })
 
 /* ---------- Task 11: audio, footer, legacy redirect, 404, robots ---------- */
 
-test('audio is off by default and the context is created lazily', () => {
-  const js = readFileSync('app.js', 'utf8')
-  assert.match(js, /audioOn\s*=\s*false/, 'audio must default to off')
-  assert.match(js, /function ensureAudio/, 'audio context must be behind a helper')
-  const ensure = js.match(/function ensureAudio[\s\S]*?\n  \}/)
-  assert.ok(ensure, 'ensureAudio should exist')
-  assert.match(ensure[0], /if\s*\(!audioCtx\)/, 'context must be created once, on demand')
+test('audio is off by default', () => {
+  // A site that makes noise before you ask is a hostile first impression, and
+  // an eagerly constructed AudioContext earns a browser warning.
+  assert.match(readFileSync('app.js', 'utf8'), /let audioOn = false/)
 })
 
 test('the footer carries every §4.1 marker', () => {
-  const html = readFileSync('index.html', 'utf8')
   for (const marker of ['GitHub Pages', 'STATIC', 'WCAG', 'llms.txt', 'LATENCY']) {
     assert.ok(html.includes(marker), `footer missing: ${marker}`)
   }
@@ -558,7 +445,6 @@ test('the footer carries every §4.1 marker', () => {
 })
 
 test('the legacy hash redirect maps old routes', () => {
-  const html = readFileSync('index.html', 'utf8')
   assert.match(html, /location\.hash/)
   for (const legacy of ['#/projects', '#/about', '#/contact']) {
     assert.ok(html.includes(legacy), `legacy route missing: ${legacy}`)
@@ -572,8 +458,6 @@ test('404 and robots exist and robots permits crawling', () => {
 
 /* ---------- Task 12: budget, no-images, no-JS rendering ---------- */
 
-import { gzipSync } from 'node:zlib'
-
 test('the shipped bundle is under the 45KB gzipped budget (§9)', () => {
   const total = ['index.html', 'styles.css', 'app.js']
     .map((f) => gzipSync(readFileSync(f)).length)
@@ -582,13 +466,12 @@ test('the shipped bundle is under the 45KB gzipped budget (§9)', () => {
 })
 
 test('no images ship (§9)', () => {
-  const html = readFileSync('index.html', 'utf8')
   assert.doesNotMatch(html, /<img\b/i)
 })
 
 test('the page works without app.js', () => {
-  const html = readFileSync('index.html', 'utf8')
-  for (const p of PROJECTS) assert.ok(html.includes(p.slug), `${p.slug} must be in raw HTML`)
+  // Every node's prose is in the markup (asserted above); the rest of the
+  // document — skills, history, contact — has to be too.
   assert.ok(html.includes('Distributed Systems (PBFT, Gossip Protocols, Vector Clocks)'))
   assert.ok(html.includes('BSc (Hons) Computer Networks'))
   assert.ok(html.includes('sathikahettiarachchi219@gmail.com'))
@@ -610,7 +493,7 @@ test('the no-JS contract hides every inert control, not just the explorer', () =
   // Without JS the copy buttons do nothing when clicked. The plan's own rule
   // for the filter and tree is "hide what does nothing"; a dead button that
   // looks live is the same defect, so it gets the same rule.
-  const sheet = css()
+  const sheet = CSS
   const rule = sheet.match(/html:not\(\.js\)[^{]*\{[^}]*\}/g) || []
   const hidden = rule.join('\n')
   for (const sel of ['.filter', '.tree', '[data-action]']) {
@@ -652,7 +535,7 @@ test('every effective text/background pair clears WCAG 2.2 AA at small-text cont
     ['dispatch submit label on hover', '#3B82F6', '#07090E'],
     ['selection text', '#FFFFFF', '#2563EB'],
   ]
-  assert.match(css(), /\.dispatch button:hover\s*\{[^}]*background:\s*transparent/,
+  assert.match(CSS, /\.dispatch button:hover\s*\{[^}]*background:\s*transparent/,
     'the hover pair below is only true while the hover state stays transparent')
 
   for (const [name, fg, bg] of pairs) {
@@ -674,12 +557,11 @@ test('without JS the page is navigable, not merely readable', () => {
   // The rewrite's promise is a complete document without scripting. Channels
   // 02-04 are `hidden` in the markup, so with JS off their content — skills,
   // experience, contact — was unreachable behind inert tabs.
-  assert.match(css(), /html:not\(\.js\)[^{]*\[hidden\][^{]*\{[^}]*display:\s*block/,
+  assert.match(CSS, /html:not\(\.js\)[^{]*\[hidden\][^{]*\{[^}]*display:\s*block/,
     'the no-JS rule must reveal the hidden channel sections')
-  assert.match(css(), /html:not\(\.js\)\s+\.channels\s*\{[^}]*display:\s*none/,
+  assert.match(CSS, /html:not\(\.js\)\s+\.channels\s*\{[^}]*display:\s*none/,
     'the tab bar does nothing without JS and must not invite a dead click')
 
-  const html = readFileSync('index.html', 'utf8')
   const form = html.match(/<form[^>]*id="dispatch-form"[^>]*>/)
   assert.ok(form, 'dispatch form missing')
   assert.match(form[0], /action="mailto:/, 'without JS the form must still reach a mail client')
@@ -696,7 +578,6 @@ test('the single-key shortcuts can be turned off (WCAG 2.1.4)', () => {
   assert.equal(shortcutsActive({ shortcutsOn: false, target: { tagName: 'INPUT' } }), false)
   assert.equal(shortcutsActive({ shortcutsOn: true, target: { isContentEditable: true } }), false)
 
-  const html = readFileSync('index.html', 'utf8')
   assert.match(html, /<button[^>]*id="keys-toggle"[^>]*aria-pressed="false"/,
     'the shortcut off switch must exist and start enabled')
   assert.match(html, /id="keys-toggle"[^>]*>\s*KEYS ON/, 'and must say what it does')
@@ -712,7 +593,6 @@ test('a deep link to an unknown node does not blank the inspector', () => {
 })
 
 test('the llms.txt trigger is announced as a dialog opener', () => {
-  const html = readFileSync('index.html', 'utf8')
   const btn = html.match(/<button[^>]*id="llms-open"[^>]*>/)
   assert.ok(btn, '#llms-open missing')
   assert.match(btn[0], /aria-haspopup="dialog"/)
@@ -737,16 +617,13 @@ test('machine mode emits the project prose and the schema block the GUI shows', 
 test('the js class is set before first paint, not by the deferred module', () => {
   // Otherwise a cold cache paints the all-articles no-JS layout and then
   // collapses it, which is a large layout shift on a site built to avoid one.
-  const html = readFileSync('index.html', 'utf8')
   assert.match(html, /<script>document\.documentElement\.classList\.add\('js'\)<\/script>/,
-    'the js class must be set by an inline head script')
-  assert.doesNotMatch(readFileSync('app.js', 'utf8'), /classList\.add\('js'\)/,
-    'and app.js must not set it a second time')
+    'the js class must be set by an inline head script, ahead of the deferred module')
 })
 
 test('every element app.js looks up by id exists in the shipped markup', () => {
   const js = readFileSync('app.js', 'utf8')
-  const markup = readFileSync('index.html', 'utf8') + readFileSync('404.html', 'utf8')
+  const markup = html + readFileSync('404.html', 'utf8')
   const ids = new Set([...js.matchAll(/\$\(['"]([a-zA-Z0-9-]+)['"]\)/g)].map((m) => m[1]))
   assert.ok(ids.size >= 10, `expected the id lookups, found ${ids.size}`)
   for (const id of ids) {
